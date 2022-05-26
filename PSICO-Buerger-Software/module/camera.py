@@ -1,24 +1,45 @@
 # pip install opencv-python
 
-# Needed Moduls
+# Needed Modules
 import cv2
 
-def connect_camera():
-    camera = cv2.VideoCapture(0)
-    return camera
+path = "file"
 
-def takepicture(camera):
+"""
+def connectCamera():
+    cam = cv2.VideoCapture(0)
+    if cam is None or not cam.isOpened():
+        print('Warning: no camera found')
+    else:
+        print('camera connected')
+        return cam
+"""
+
+def takePicture(camera):
     return_value, image = camera.read()
     return image
 
-def show_picture(image):
+def showPicture(image):
     cv2.imshow('test.png',image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def delete_camera(camera):
+def deleteCamera(camera):
     del(camera)
 
-cam = connect_camera()
-picture = takepicture(cam)
-show_picture(picture)
+def savePicture(path, picture):
+    cv2.imwrite(path, picture)
+
+
+def main():
+    cam = cv2.VideoCapture(0)
+    if cam is None or not cam.isOpened():
+        print('Warning: no camera found')
+    else:
+        print('camera connected')
+        showPicture(takePicture(cam))
+        #savePicture(path, takePicture(cam))
+        deleteCamera(cam)
+
+#test
+#main()
