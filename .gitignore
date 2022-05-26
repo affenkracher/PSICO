@@ -3,4 +3,5 @@
 */.vscode/*
 
 # lib pycache folders
-*/__pycache__/*
+PSICO-Buerger-Software\modules\mouselogger\mouse\__pycache__
+PSICO-Buerger-Software\modules\keylogger\keyboard\__pycache__
