@@ -1,2 +1,8 @@
 Funktion für Kamera:
 # pip install opencv-python
+
+To install System-Popup
+#pip install win10toast
+
+To install Taskmanager reader
+#pip3 install psutil pandas
