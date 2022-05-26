@@ -60,6 +60,7 @@ class Window(QTabWidget):
         self.tab1.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
         self.tab1.filterCaseSensitivityCheckBox.toggled.connect(self.filterPatternChanged)
         self.tab1.sortCaseSensitivityCheckBox.toggled.connect(self.sortCaseSensitivityChanged)
+        self.tab1.citizenListView.doubleClicked.connect(self.doubleClicked)
 
         self.tab1.citizenListView.sortByColumn(0, Qt.AscendingOrder)
         self.tab1.filterColumnComboBox.setCurrentIndex(1)
@@ -122,6 +123,10 @@ class Window(QTabWidget):
         else:
             caseSensitivity = Qt.CaseInsensitive
         self.tab1.citizenListModel.setSortCaseSensitivity(caseSensitivity)
+        
+    def doubleClicked(self,index):
+        item = self.tab1.citizenListView.selectedIndexes()[0]
+        print(item)
     
 
 def addEntry(citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, tastenanschlägeProMin, klicksProMin, socialCredit, letzteAktualisierung):
