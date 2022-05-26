@@ -16,7 +16,7 @@ def connectCamera():
 """
 
 def takePicture(camera):
-    return_value, image = camera.read()
+    _, image = camera.read()
     return image
 
 def showPicture(image):
