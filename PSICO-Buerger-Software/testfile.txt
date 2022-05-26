@@ -1,8 +1,13 @@
-Funktion für Kamera:
+Install for camera:
 # pip install opencv-python
 
-To install System-Popup
+Install for microfone:
+#pip install sounddevice
+#pip install scipy
+
+Install for System-Popup
 #pip install win10toast
 
-To install Taskmanager reader
+Install for Taskmanager reader
 #pip3 install psutil pandas
+
