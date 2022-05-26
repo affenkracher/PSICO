@@ -1,0 +1,2 @@
+Funktion für Kamera:
+# pip install opencv-python
