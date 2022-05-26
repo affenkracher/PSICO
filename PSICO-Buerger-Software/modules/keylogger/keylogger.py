@@ -3,17 +3,18 @@ import keyboard
 KEY_INPUT = []
 KEY_INPUT_STRINGS = []
 
+def record():
+    return keyboard.record("escape", False, False)
+
+def deductStringInputs(keyEventStream):
+    KEY_INPUT = []
+    KEY_INPUT = keyboard.get_typed_strings(keyEventStream)
+    for keyInput in KEY_INPUT:
+        if keyInput != "":
+            KEY_INPUT_STRINGS.append(keyInput)
+
 def listen():
-    KEYBOARD_EVENTS = keyboard.record("escape", False, False)
-    for keyStroke in KEYBOARD_EVENTS:
-        KEY_INPUT.append(keyStroke.name)
-    return "".join(KEY_INPUT)
+    deductStringInputs(record())
 
-def deductStringInputs():
-    STRING = keyboard.get_typed_strings(keyboard.record("escape", False, False))
-    for stri in STRING:
-        if stri != "":
-            KEY_INPUT_STRINGS.append(stri)
-
-deductStringInputs()
-print(KEY_INPUT_STRINGS)
+def getInputStrings():
+    return KEY_INPUT_STRINGS
