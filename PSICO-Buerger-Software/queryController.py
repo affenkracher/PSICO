@@ -1,31 +1,38 @@
 import firebase_admin
-from firebase_admin import credentials
 from firebase_admin import firestore
+from firebase_admin import credentials
+from firebase_admin import db
+import os
 
 # https://firebase.google.com/docs/admin/setup#initialize-sdk
 
-cred = credentials.ApplicationDefault()
-print(cred)
-firebase_admin.initialize_app(cred, {
-    'projectId': 'psico-software',
+cwd = os.getcwd()
+
+certificateFilePath = cwd + '\\PSICO-Buerger-Software\\res\\firestoreCertificate.json'
+
+cred = credentials.Certificate(certificateFilePath)
+
+psico_app = firebase_admin.initialize_app(cred, options={
+    'projectId': 'psico-software'
 })
 
-db = firestore.client()
+database = firestore.client(psico_app)
 
-USER_STORAGE_REF = db.collection(u'Citizen-Storage')
-REF = USER_STORAGE_REF.stream()
+USER_STORAGE_REF = database.collection(u'Citizen-Storage')
+REF = USER_STORAGE_REF.get()
 
 for doc in REF:
     print(f'{doc.id} => {doc.to_dict()}')
+    
 
 class QueryController():
     def __init__(self) -> None:
-        self.instance = 1
+        self.alive = True
 
     def updateQuery(citizen):
         pass
 
-    def insertQuery() -> int:
+    def insertQuery():
         pass
 
     def selectQuery(id):
