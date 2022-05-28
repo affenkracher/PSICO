@@ -45,28 +45,10 @@ def write(string: str):
         else:
             keyboard.press_and_release(f'{c}')
 
-def checkForBadWords(listOfBadWords: List[str], sentence: str):
-    for word in sentence.split(" "):
-        if word == "" or word == " ":
-            continue
-        for badWord in listOfBadWords:
-            if SequenceMatcher(None, word, badWord).ratio() > 0.75:
-                index = sentence.index(word)
-                return (True, word, index)
-    return (False, "", 0)
+def similar(a: str, b: str):
+    return SequenceMatcher(None, a, b).ratio() > 0.75
 
-def deleteWordInKeyInput(keyInputStrings: List[str], listOfBadWords: List[str]):
-    reversedInputStrings = keyInputStrings.reverse()
-    moveRight(len(reversedInputStrings))
-    for index, line in enumerate(reversedInputStrings):
-        for word in line:
-            bad, wordToDelete, indexOfWordToDelete = checkForBadWords(listOfBadWords, line)
-            if bad:
-                correctedSentence = deleteWordInSentence(line, wordToDelete)
-                reversedInputStrings[index] = correctedSentence
-                moveRight(len(reversedInputStrings[index]))
-
-def deleteWordInSentence(sentence: str, word: str):
+def deleteWordInLine(sentence: str, word: str):
     try:
         leftIndex = sentence.index(word)
         rightIndex = leftIndex + len(word)
@@ -78,16 +60,55 @@ def deleteWordInSentence(sentence: str, word: str):
     except:
         return
 
+def deleteAllInLine(line: str, word: str):
+    newLine = line
+    while contains(newLine, word):
+        newLine = deleteWordInLine(newLine, word)
+
 def deleteWord(word: str):
     length = len(word)
     for _ in range(0, length):
         keyboard.press_and_release("backspace")
     keyboard.press_and_release("delete")
+    return True
+
+def deleteLine(sentence: str):
+    length = len(sentence)
+    for _ in range(0, length):
+        keyboard.press_and_release("backspace")
 
 def correctWord(wrongWord: str, correctWord: str):
     deleteWord(wrongWord)
-    write(correctWord)
+    write(correctWord+" ")
     return True
+
+def contains(input: str, substring: str):
+    for word in input.split(" "):
+        if similar(word, substring):
+            return True
+    return False
+
+def getSimilar(input: str, substing: str):
+    for word in input.split(" "):
+        if similar(word, substing):
+            return word
+
+def censor(keyInputString: List[str], badWords: List[str]):
+    copied = keyInputString.copy()
+    copied.reverse()
+    correctedSentences = []
+    for index, input in enumerate(copied):
+        correctedSentence = input
+        for badWord in badWords:
+            """ words = correctedSentence.split(" ")
+            for word in words:
+                if similar(word, badWord):
+                    correctedSentence = deleteWordInLine(correctedSentence, word) """
+            while contains(correctedSentence, badWord):
+                correctedSentence = deleteWordInLine(correctedSentence, getSimilar(correctedSentence, badWord))
+        if index < len(copied) - 1:
+            moveToUpperRightLineEnd(correctedSentence, copied[index+1])
+    return correctedSentences
 
 def moveRight(len: int):
     for i in range(0, len):
@@ -105,7 +126,7 @@ def moveDown(len: int):
     for i in range(0, len):
         keyboard.press_and_release("down")
 
-def moveToUpperLineEnd(currentLine: str, upperLine = ""):
+def moveToUpperRightLineEnd(currentLine: str, upperLine = ""):
     if len(upperLine) == 0:
         return
     moveUp(1)
@@ -117,37 +138,14 @@ def moveToUpperLineEnd(currentLine: str, upperLine = ""):
     else:
         moveRight(diff)
 
-def containsBadWord(input: str, badWord: str):
-    try:
-        index = input.index(badWord)
-        if index:
-            return True
-        return False
-    except:
-        return False
-
-def censor(keyInputString: List[str], badWords: List[str]):
-    copied = keyInputString.copy()
-    copied.reverse()
-    correctedSentences = []
-    for index, inputString in enumerate(copied):
-        words = inputString.split(" ")
-        correctedSentence = inputString
-        for word in words:
-            for badWord in badWords:
-                while containsBadWord(correctedSentence, badWord):
-                    correctedSentence = deleteWordInSentence(correctedSentence, word)
-                    correctedSentences.append(correctedSentence)
-        if index < len(copied) - 1:
-            moveToUpperLineEnd(correctedSentence, copied[index+1])
-    return correctedSentences
-
 def main():
     """ time.sleep(3)
-    write("Dear Hello World!")
-    time.sleep(1)
-    deleteWordInSentence(deleteWordInSentence("Dear Hello World!", "Hello"), "Dear") """
-    words = listen()
-    censor(words, ["awd"])
+    write("Dear World, Hello World!") """
+    """ time.sleep(2)
+    deleteWordInLine("Dear World, Hello World!", "Dear") """
+    """ time.sleep(1)
+    deleteWordInLine(deleteWordInLine(deleteWordInLine("Dear World, Hello World!", "Hello"), "Dear"), "World!") """
+    lines = listen()
+    censor(lines, ["awd", "jwt"])
 
 main()
