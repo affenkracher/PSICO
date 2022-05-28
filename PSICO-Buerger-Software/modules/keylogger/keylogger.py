@@ -58,12 +58,13 @@ def deleteWordInLine(sentence: str, word: str):
         moveRight(len(sentence)-rightIndex)
         return newSenctence
     except:
-        return
+        return ""
 
 def deleteAllInLine(line: str, word: str):
     newLine = line
     while contains(newLine, word):
         newLine = deleteWordInLine(newLine, word)
+    return newLine
 
 def deleteWord(word: str):
     length = len(word)
@@ -93,21 +94,20 @@ def getSimilar(input: str, substing: str):
         if similar(word, substing):
             return word
 
+def censorLine(line: str, badWords: List[str]):
+    for badWord in badWords:
+        nl = line
+        while contains(nl, badWord):
+            nl = deleteAllInLine(line, getSimilar(line, badWord))
+
 def censor(keyInputString: List[str], badWords: List[str]):
     copied = keyInputString.copy()
     copied.reverse()
     correctedSentences = []
     for index, input in enumerate(copied):
-        correctedSentence = input
-        for badWord in badWords:
-            """ words = correctedSentence.split(" ")
-            for word in words:
-                if similar(word, badWord):
-                    correctedSentence = deleteWordInLine(correctedSentence, word) """
-            while contains(correctedSentence, badWord):
-                correctedSentence = deleteWordInLine(correctedSentence, getSimilar(correctedSentence, badWord))
-        if index < len(copied) - 1:
-            moveToUpperRightLineEnd(correctedSentence, copied[index+1])
+        correctedSentence = censorLine(input, badWords)
+        correctedSentences.append(correctedSentence)
+        moveToUpperRightLineEnd()
     return correctedSentences
 
 def moveRight(len: int):
@@ -126,17 +126,9 @@ def moveDown(len: int):
     for i in range(0, len):
         keyboard.press_and_release("down")
 
-def moveToUpperRightLineEnd(currentLine: str, upperLine = ""):
-    if len(upperLine) == 0:
-        return
+def moveToUpperRightLineEnd():
     moveUp(1)
-    underLength = len(currentLine)
-    upperLength = len(upperLine)
-    diff = upperLength - underLength
-    if diff < 0:
-        moveLeft(diff)
-    else:
-        moveRight(diff)
+    keyboard.press_and_release("end")
 
 def main():
     """ time.sleep(3)
@@ -147,5 +139,7 @@ def main():
     deleteWordInLine(deleteWordInLine(deleteWordInLine("Dear World, Hello World!", "Hello"), "Dear"), "World!") """
     lines = listen()
     censor(lines, ["awd", "jwt"])
-
+    """ time.sleep(3)
+    moveToUpperRightLineEnd()
+ """
 main()
