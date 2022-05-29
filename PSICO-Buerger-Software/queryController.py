@@ -23,7 +23,7 @@ REF = USER_STORAGE_REF.get()
 
 for doc in REF:
     print(f'{doc.id} => {doc.to_dict()}')
-    
+
 
 class QueryController():
     def __init__(self) -> None:
