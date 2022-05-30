@@ -29,8 +29,10 @@ def evaluateUsage(stringList: List[str]):
     keyEvaluation = {}
     for str in stringList:
         for c in str:
-            if not c in keyEvaluation:
-                keyEvaluation[c] = str.count(c)
+            if c in SHIFT_PUNCTUATION:
+                keyEvaluation[c] = keyEvaluation[c] + 2 or 2
+            else:
+                keyEvaluation[c] = keyEvaluation[c] + 1 or 1
     return keyEvaluation
 
 def listen():
@@ -129,6 +131,20 @@ def moveDown(len: int):
 def moveToUpperRightLineEnd():
     moveUp(1)
     keyboard.press_and_release("end")
+
+def checkSentences(sentences: List[str], antiGovernmentSentences: List[str]):
+    for sentence in sentences:
+        for badSentence in antiGovernmentSentences:
+            if similar(sentence, badSentence):
+                return sentence
+    return ""
+
+def checkWord(word: str, antiGovernmentWords: List[str]):
+    for badWord in antiGovernmentWords:
+        if similar(word, badWord):
+            return word
+    return ""
+
 
 def main():
     """ time.sleep(3)
