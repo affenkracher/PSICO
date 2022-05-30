@@ -1,5 +1,3 @@
-# pip install opencv-python
-
 # Needed Modules
 import cv2
 
@@ -31,7 +29,7 @@ def savePicture(path, picture):
     cv2.imwrite(path, picture)
 
 
-def main():
+def record():
     cam = cv2.VideoCapture(0)
     if cam is None or not cam.isOpened():
         print('Warning: no camera found')
@@ -42,4 +40,4 @@ def main():
         deleteCamera(cam)
 
 #test
-#main()
+#record()

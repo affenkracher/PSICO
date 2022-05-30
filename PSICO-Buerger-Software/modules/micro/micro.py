@@ -5,7 +5,7 @@ fps = 44100 #rate
 seconds = 5 #duration of recording
 filename = "recording.wav"
 
-def main(fps, seconds, filename):
+def record(fps, seconds, filename):
     print('recording started')
 
     recording = sd.rec(int(seconds*fps), samplerate=fps, channels=2) #record
@@ -17,5 +17,4 @@ def main(fps, seconds, filename):
     write(filename, fps, recording) #save to WAV file
 
 #test
-#main(fps, seconds, filename)
-
+#record(fps, seconds, filename)
