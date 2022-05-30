@@ -1,7 +1,7 @@
 # VS Code folders
 .vscode/*
 */.vscode/*
-
-# lib pycache folders
+/PSICO-Buerger-Software/res/firestoreCertificate.json
 /PSICO-Buerger-Software/modules/mouselogger/mouse/__pycache__
 /PSICO-Buerger-Software/modules/keylogger/keyboard/__pycache__
+
