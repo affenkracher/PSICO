@@ -24,7 +24,7 @@ def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[s
         censorSentences(lines, antiGovernmentSentences)
         keyEvaluation = evaluateKeyUsage(lines)
         print(keyEvaluation)
-        print(wpm({word for string in typedStrings for word in string.slpit(" ")}, recordingEnd, recordingStart))
+        print(wpm(lines, recordingEnd, recordingStart))
         yield lines
 
 def censorSentences(sentences: List[str], antiGovernmentSentences: List[str]):
@@ -36,8 +36,12 @@ def censorSentences(sentences: List[str], antiGovernmentSentences: List[str]):
                 deleteLine(sentence)
         moveToUpperRightLineEnd()
         
-def wpm(words, recordingEnd, recordingStart):
-    return (len(words) * 60) / (recordingEnd - recordingStart)
+def wpm(lines: List[str], recordingEnd, recordingStart):
+    words = []
+    for line in lines:
+        words.append(line.split(" "))
+    wordsPerMinute = (len(words) * 60) / (recordingEnd - recordingStart)
+    return wordsPerMinute
 
 def evaluateKeyUsage(stringList: List[str]):
     keyEvaluation = {}
@@ -118,7 +122,7 @@ def checkSentences(sentences: List[str], antiGovernmentSentences: List[str]):
     return foundSentences
 
 def main():
-    input = readKeyInput(["awd", "jwt"], ["jwt jwt"])
+    input = readKeyInput([], ["jwt jwt"])
     for a in input:
         print(a)
     
