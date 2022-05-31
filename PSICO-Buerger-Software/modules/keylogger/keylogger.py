@@ -15,17 +15,26 @@ def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[s
         lines = []
         recordingStart = time.time()
         keyboard.start_recording()
-        time.sleep(5)
+        time.sleep(10)
         keyEvents = keyboard.stop_recording()
         recordingEnd = time.time()
         typedStrings = keyboard.get_typed_strings(keyEvents)
         for line in typedStrings:
             lines.append(line)
+            if containes(line, "konami"):
+                return
         censorSentences(lines, antiGovernmentSentences)
         keyEvaluation = evaluateKeyUsage(lines)
         print(keyEvaluation)
         print(wpm(lines, recordingEnd, recordingStart))
         yield lines
+
+def containes(line: str, sub: str):
+    try:
+        index = line.index(sub)
+        return True
+    except:
+        return False
 
 def censorSentences(sentences: List[str], antiGovernmentSentences: List[str]):
     reversed = sentences.copy()
@@ -35,6 +44,8 @@ def censorSentences(sentences: List[str], antiGovernmentSentences: List[str]):
             if similar(sentence, badSentence):
                 deleteLine(sentence)
         moveToUpperRightLineEnd()
+    moveDown(len(sentences))
+    keyboard.press_and_release("end")
         
 def wpm(lines: List[str], recordingEnd, recordingStart):
     words = []
