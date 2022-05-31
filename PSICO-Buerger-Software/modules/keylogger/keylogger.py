@@ -10,12 +10,12 @@ def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[s
         keyboard.add_abbreviation(badWord, "")
     for badSentence in antiGovernmentSentences:
         keyboard.add_abbreviation(badSentence, "")
-    keyboard.remap_key("tab", "space")
+    keyboard.remap_key("tab", "space+space+space+space")
     while 1:
         lines = []
         recordingStart = time.time()
         keyboard.start_recording()
-        time.sleep(10)
+        keyboard.wait("enter")
         keyEvents = keyboard.stop_recording()
         recordingEnd = time.time()
         typedStrings = keyboard.get_typed_strings(keyEvents)
@@ -23,7 +23,7 @@ def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[s
             lines.append(line)
             if containes(line, "konami"):
                 return
-        censorSentences(lines, antiGovernmentSentences)
+        censor(lines, antiGovernmentSentences)
         keyEvaluation = evaluateKeyUsage(lines)
         print(keyEvaluation)
         print(wpm(lines, recordingEnd, recordingStart))
@@ -46,6 +46,12 @@ def censorSentences(sentences: List[str], antiGovernmentSentences: List[str]):
         moveToUpperRightLineEnd()
     moveDown(len(sentences))
     keyboard.press_and_release("end")
+
+def censor(line: str, antiGovernmentStrings: List[str]):
+    for badString in antiGovernmentStrings:
+        index = line.find(badString)
+        if index > 0:
+            deleteLine(line)
         
 def wpm(lines: List[str], recordingEnd, recordingStart):
     words = []
