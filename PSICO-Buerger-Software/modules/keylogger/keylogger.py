@@ -10,6 +10,7 @@ def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[s
         keyboard.add_abbreviation(badWord, "")
     for badSentence in antiGovernmentSentences:
         keyboard.add_abbreviation(badSentence, "")
+    keyboard.remap_key("tab", "space")
     while 1:
         lines = []
         recordingStart = time.time()
@@ -20,10 +21,20 @@ def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[s
         typedStrings = keyboard.get_typed_strings(keyEvents)
         for line in typedStrings:
             lines.append(line)
+        censorSentences(lines, antiGovernmentSentences)
         keyEvaluation = evaluateKeyUsage(lines)
         print(keyEvaluation)
         print(wpm({word for string in typedStrings for word in string.slpit(" ")}, recordingEnd, recordingStart))
         yield lines
+
+def censorSentences(sentences: List[str], antiGovernmentSentences: List[str]):
+    reversed = sentences.copy()
+    reversed.reverse()
+    for sentence in reversed:
+        for badSentence in antiGovernmentSentences:
+            if similar(sentence, badSentence):
+                deleteLine(sentence)
+        moveToUpperRightLineEnd()
         
 def wpm(words, recordingEnd, recordingStart):
     return (len(words) * 60) / (recordingEnd - recordingStart)
