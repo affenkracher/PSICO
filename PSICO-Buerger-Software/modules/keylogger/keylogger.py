@@ -1,42 +1,44 @@
 from typing import List
 import keyboard
-from keyboard._keyboard_event import KeyboardEvent, KEY_UP, KEY_DOWN
 import time
 from difflib import SequenceMatcher
 
 SHIFT_PUNCTUATION = ['!', '"', '§', '$', '%', '&', '/', '(', ')', '=', '?', ';', ':', '_', '`', '*', '\'']
 
-def record():
-    executionTimeStart = time.time()
-    return (keyboard.record("backspace", False, False), executionTimeStart)
+def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[str]):
+    for badWord in antiGovernmentWords:
+        keyboard.add_abbreviation(badWord, "")
+    for badSentence in antiGovernmentSentences:
+        keyboard.add_abbreviation(badSentence, "")
+    while 1:
+        lines = []
+        recordingStart = time.time()
+        keyboard.start_recording()
+        time.sleep(5)
+        keyEvents = keyboard.stop_recording()
+        recordingEnd = time.time()
+        typedStrings = keyboard.get_typed_strings(keyEvents)
+        for line in typedStrings:
+            lines.append(line)
+        keyEvaluation = evaluateKeyUsage(lines)
+        print(keyEvaluation)
+        print(wpm({word for string in typedStrings for word in string.slpit(" ")}, recordingEnd, recordingStart))
+        yield lines
+        
+def wpm(words, recordingEnd, recordingStart):
+    return (len(words) * 60) / (recordingEnd - recordingStart)
 
-def deductStringInputs(keyEventStream):
-    keyInputStream, executionTimeStart = keyEventStream
-    keyInputs = keyboard.get_typed_strings(keyInputStream, True)
-    executionTimeEnd = time.time()
-    keyInputStrings = []
-    for keyInput in keyInputs:
-        if keyInput != "":
-            keyInputStrings.append(keyInput)
-    evaluation = evaluateUsage(keyInputStrings)
-    words = {word for string in keyInputStrings for word in string.split(" ")}
-    wordsPerMinute = (len(words) * 60 / (executionTimeEnd - executionTimeStart))
-    if wordsPerMinute < 100:
-        print(f'Produktivität niedrig: WPM = {wordsPerMinute}')
-    return keyInputStrings
-
-def evaluateUsage(stringList: List[str]):
+def evaluateKeyUsage(stringList: List[str]):
     keyEvaluation = {}
     for str in stringList:
         for c in str:
-            if c in SHIFT_PUNCTUATION:
-                keyEvaluation[c] = keyEvaluation[c] + 2 or 2
+            count = str.count(c)
+            if c not in keyEvaluation:
+                keyEvaluation[c] = count
             else:
-                keyEvaluation[c] = keyEvaluation[c] + 1 or 1
+                oldCount = keyEvaluation[c]
+                keyEvaluation[c] = oldCount + count
     return keyEvaluation
-
-def listen():
-    return deductStringInputs(record())
 
 def write(string: str):
     for c in string:
@@ -50,24 +52,6 @@ def write(string: str):
 def similar(a: str, b: str):
     return SequenceMatcher(None, a, b).ratio() > 0.75
 
-def deleteWordInLine(sentence: str, word: str):
-    try:
-        leftIndex = sentence.index(word)
-        rightIndex = leftIndex + len(word)
-        moveLeft(len(sentence)-rightIndex)
-        deleteWord(word)
-        newSenctence = sentence[:leftIndex] + sentence[rightIndex+1:]
-        moveRight(len(sentence)-rightIndex)
-        return newSenctence
-    except:
-        return ""
-
-def deleteAllInLine(line: str, word: str):
-    newLine = line
-    while contains(newLine, word):
-        newLine = deleteWordInLine(newLine, word)
-    return newLine
-
 def deleteWord(word: str):
     length = len(word)
     for _ in range(0, length):
@@ -75,8 +59,8 @@ def deleteWord(word: str):
     keyboard.press_and_release("delete")
     return True
 
-def deleteLine(sentence: str):
-    length = len(sentence)
+def deleteLine(line: str):
+    length = len(line)
     for _ in range(0, length):
         keyboard.press_and_release("backspace")
 
@@ -84,33 +68,6 @@ def correctWord(wrongWord: str, correctWord: str):
     deleteWord(wrongWord)
     write(correctWord+" ")
     return True
-
-def contains(input: str, substring: str):
-    for word in input.split(" "):
-        if similar(word, substring):
-            return True
-    return False
-
-def getSimilar(input: str, substing: str):
-    for word in input.split(" "):
-        if similar(word, substing):
-            return word
-
-def censorLine(line: str, badWords: List[str]):
-    for badWord in badWords:
-        nl = line
-        while contains(nl, badWord):
-            nl = deleteAllInLine(line, getSimilar(line, badWord))
-
-def censor(keyInputString: List[str], badWords: List[str]):
-    copied = keyInputString.copy()
-    copied.reverse()
-    correctedSentences = []
-    for index, input in enumerate(copied):
-        correctedSentence = censorLine(input, badWords)
-        correctedSentences.append(correctedSentence)
-        moveToUpperRightLineEnd()
-    return correctedSentences
 
 def moveRight(len: int):
     for i in range(0, len):
@@ -132,30 +89,26 @@ def moveToUpperRightLineEnd():
     moveUp(1)
     keyboard.press_and_release("end")
 
+def checkWordInSentence(sentence: str, antiGovernmentWords: List[str]):
+    words = sentence.split(" ")
+    foundWords = []
+    for word in words:
+        for anitWord in antiGovernmentWords:
+            if similar(word, anitWord):
+                foundWords.append(word)
+    return foundWords
+
 def checkSentences(sentences: List[str], antiGovernmentSentences: List[str]):
+    foundSentences = []
     for sentence in sentences:
-        for badSentence in antiGovernmentSentences:
-            if similar(sentence, badSentence):
-                return sentence
-    return ""
-
-def checkWord(word: str, antiGovernmentWords: List[str]):
-    for badWord in antiGovernmentWords:
-        if similar(word, badWord):
-            return word
-    return ""
-
+        for antiSentence in antiGovernmentSentences:
+            if similar(sentence, antiSentence):
+                foundSentences.append(sentence)
+    return foundSentences
 
 def main():
-    """ time.sleep(3)
-    write("Dear World, Hello World!") """
-    """ time.sleep(2)
-    deleteWordInLine("Dear World, Hello World!", "Dear") """
-    """ time.sleep(1)
-    deleteWordInLine(deleteWordInLine(deleteWordInLine("Dear World, Hello World!", "Hello"), "Dear"), "World!") """
-    lines = listen()
-    censor(lines, ["awd", "jwt"])
-    """ time.sleep(3)
-    moveToUpperRightLineEnd()
- """
+    input = readKeyInput(["awd", "jwt"], ["jwt jwt"])
+    for a in input:
+        print(a)
+    
 main()
