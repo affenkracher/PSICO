@@ -30,13 +30,13 @@ ref.set({
         {
             'Citizen-001':
                 {
-                    'lname': 'test',
-                    'fname': 'test'
+                    'lname': 'B',
+                    'fname': '2'
                 },
             'Citizen-002':
                 {
-                    'lname': 'test',
-                    'fname': 'test'
+                    'lname': 'A',
+                    'fname': '9'
                 }
         }
 })
