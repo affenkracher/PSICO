@@ -4,8 +4,8 @@
 
 # Firestore Credentials
 /PSICO-Buerger-Software/res/firestoreCertificate.json
-
-# Caches
-/PSICO-Buerger-Software/modules/mouselogger/mouse/__pycache__
-/PSICO-Buerger-Software/modules/keylogger/keyboard/__pycache__
-/PSICO-Buerger-Software/dataClasses/__pycache__
+/PSICO-Buerger-Software/modules/mouselogger/mouse/__pycache__/
+/PSICO-Buerger-Software/modules/keylogger/keyboard/__pycache__/
+/PSICO-Buerger-Software/modules/keylogger/__pycache__
+/PSICO-Buerger-Software/modules/__pycache__
+/PSICO-Buerger-Software/dataClasses/__pycache__/

