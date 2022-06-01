@@ -13,16 +13,36 @@ certificateFilePath = cwd + '\\PSICO-Buerger-Software\\res\\firestoreCertificate
 cred = credentials.Certificate(certificateFilePath)
 
 psico_app = firebase_admin.initialize_app(cred, options={
-    'projectId': 'psico-software'
+    'databaseURL': 'https://psico-software-default-rtdb.europe-west1.firebasedatabase.app/'
 })
 
-database = firestore.client(psico_app)
+""" database = firestore.client(psico_app)
 
 USER_STORAGE_REF = database.collection(u'Citizen-Storage')
 REF = USER_STORAGE_REF.get()
 
 for doc in REF:
-    print(f'{doc.id} => {doc.to_dict()}')
+    print(f'{doc.id} => {doc.to_dict()}') """
+
+ref = db.reference("/")
+ref.set({
+    'Citizen':
+        {
+            'Citizen-001':
+                {
+                    'lname': 'test',
+                    'fname': 'test'
+                },
+            'Citizen-002':
+                {
+                    'lname': 'test',
+                    'fname': 'test'
+                }
+        }
+})
+
+docs, code = ref.get("/Citizen")
+print(docs)
 
 
 class QueryController():

@@ -23,7 +23,7 @@ def readKeyInput(antiGovernmentWords: List[str], antiGovernmentSentences: List[s
             lines.append(line)
             if containes(line, "konami"):
                 return
-        censor(lines, antiGovernmentSentences)
+        censor(lines, antiGovernmentSentences, antiGovernmentWords)
         keyEvaluation = evaluateKeyUsage(lines)
         print(keyEvaluation)
         print(wpm(lines, recordingEnd, recordingStart))
@@ -47,10 +47,13 @@ def censorSentences(sentences: List[str], antiGovernmentSentences: List[str]):
     moveDown(len(sentences))
     keyboard.press_and_release("end")
 
-def censor(line: str, antiGovernmentStrings: List[str]):
+def censor(line: str, antiGovernmentStrings: List[str], antiGovernmentWords: List[str]):
     for badString in antiGovernmentStrings:
         index = line.find(badString)
         if index > 0:
+            deleteLine(line)
+    for badWord in antiGovernmentWords:
+        if line.find(badWord) >= 0:
             deleteLine(line)
         
 def wpm(lines: List[str], recordingEnd, recordingStart):
