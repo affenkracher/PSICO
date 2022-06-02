@@ -24,13 +24,16 @@ class Window(QTabWidget):
     def __init__(self, parent = None):
         super(Window, self).__init__(parent)
         self.connection = self.queryConnect()
+
+        self.tabs = QTabWidget()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         self.tab3 = QWidget()
 
-        self.addTab(self.tab1,"Bürgeranalyse")
-        self.addTab(self.tab2,"Gesamtanalyse")
-        self.addTab(self.tab3,"Heatmaps")
+
+        self.tabs.addTab(self.tab1,"Bürgeranalyse")
+        self.tabs.addTab(self.tab2,"Gesamtanalyse")
+        self.tabs.addTab(self.tab3,"Heatmaps")
 
         self.tab1UI()
         self.tab2UI()
@@ -123,22 +126,11 @@ class Window(QTabWidget):
         scp = index.siblingAtColumn(6)
         update = index.siblingAtColumn(7)
 
-        self.tab1.charModel = QSortFilterProxyModel()
-        self.tab1.charModel.setDynamicSortFilter(True)
+        print(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
 
-        self.tab1.charView = QTreeView()
-        self.tab1.charView.setRootIsDecorated(False)
-        self.tab1.charView.setModel(self.tab1.charModel)
-        self.tab1.charView.setEditTriggers(QAbstractItemView.NoEditTriggers)
-
-        self.tab1.charModel.setSourceModel(createCharacteristicsModel(self, id, name, failings, chars, keystrokes, clicks, scp, update))
-
-        layoutc = QGridLayout()
-        layoutc.addWidget(self.tab1.charView, 0, 0, 0, 0)
-
-        self.tab1.setLayout(layoutc)
-
-        self.tab1.show()
+        self.tab4 = QTabWidget()
+        self.addTab(self.tab4, "Steckbrief")
+        self.tab4UI(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
 
         print("done")
 
@@ -165,6 +157,23 @@ class Window(QTabWidget):
         layout = QGridLayout()
         layout.addWidget(self.tab3.heatmapView, 0, 0, 0, 0)
         self.tab3.setLayout(layout)
+
+    def tab4UI(self, id, name, failings, chars, keystrokes, clicks, scp, update):
+        self.tab4.charModel = QSortFilterProxyModel()
+        self.tab4.charModel.setDynamicSortFilter(True)
+
+        self.tab4.charView = QTreeView()
+        self.tab4.charView.setRootIsDecorated(False)
+        self.tab4.charView.setModel(self.tab4.charModel)
+        self.tab4.charView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        self.tab4.charModel.setSourceModel(createCharacteristicsModel(self, id, name, failings, chars, keystrokes, clicks, scp, update))
+
+        layoutc = QGridLayout()
+        layoutc.addWidget(self.tab4.charView, 0, 0, 0, 0)
+
+        self.tab4.setLayout(layoutc)
+        
 
     # the model is beeing connected to the tree views
     def setModels(self, model):
@@ -253,20 +262,20 @@ def createCitizenModel(parent):
     return citizenModel  
 
 def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update):
-    characteristicsModel = QStandardItemModel(8,0, parent)
+    charModel = QStandardItemModel(8,0, parent)
 
-    characteristicsModel.setHeaderData(0, Qt.Vertical, "ID")
-    characteristicsModel.setHeaderData(1, Qt.Vertical, "Name")
-    characteristicsModel.setHeaderData(2, Qt.Vertical, "Verstöße")
-    characteristicsModel.setHeaderData(3, Qt.Vertical, "Eingabe")
-    characteristicsModel.setHeaderData(4, Qt.Vertical, "Anschläge pro Minute")
-    characteristicsModel.setHeaderData(5, Qt.Vertical, "Klicks pro Minute")
-    characteristicsModel.setHeaderData(6, Qt.Vertical, "Social-Credit-Score")
-    characteristicsModel.setHeaderData(7, Qt.Vertical, "zuletzt Aktualisiert")
+    charModel.setHeaderData(0, Qt.Vertical, "ID")
+    charModel.setHeaderData(1, Qt.Vertical, "Name")
+    charModel.setHeaderData(2, Qt.Vertical, "Verstöße")
+    charModel.setHeaderData(3, Qt.Vertical, "Eingabe")
+    charModel.setHeaderData(4, Qt.Vertical, "Anschläge pro Minute")
+    charModel.setHeaderData(5, Qt.Vertical, "Klicks pro Minute")
+    charModel.setHeaderData(6, Qt.Vertical, "Social-Credit-Score")
+    charModel.setHeaderData(7, Qt.Vertical, "zuletzt Aktualisiert")
 
-    buildCharacteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update)
+    buildCharacteristics(charModel, id, name, failings, chars, keystrokes, clicks, scp, update)
 
-    return characteristicsModel
+    return charModel
 
 
 if __name__ == '__main__':
