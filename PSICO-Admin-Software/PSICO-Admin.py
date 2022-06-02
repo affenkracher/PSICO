@@ -91,10 +91,6 @@ class Window(QTabWidget):
         self.tab1.filterColumnLabel = QLabel("Filter-Spalte:")
         self.tab1.filterColumnLabel.setBuddy(self.tab1.filterColumnComboBox)
 
-        self.tab1.characteristics = QTreeView()
-        self.tab1.characteristics.setRootIsDecorated(False)
-        self.tab1.characteristics.setEditTriggers(QAbstractItemView.NoEditTriggers)
-
         self.tab1.filterPatternLineEdit.textChanged.connect(self.filterPatternChanged)
         self.tab1.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
         self.tab1.filterCaseSensitivityCheckBox.toggled.connect(self.filterPatternChanged)
@@ -127,20 +123,29 @@ class Window(QTabWidget):
         scp = index.siblingAtColumn(6)
         update = index.siblingAtColumn(7)
 
-        result = self.query(self.connection)
+        self.tab1.charModel = QSortFilterProxyModel()
+        self.tab1.charModel.setDynamicSortFilter(True)
 
-        firstEntry = result[0]
-        print(firstEntry['fname'])
-        firstEntry = result[0]
-        print(firstEntry['lname'])
-        firstEntry = result[1]
-        print(firstEntry['fname'])
-        firstEntry = result[1]
-        print(firstEntry['lname'])
+        self.tab1.charView = QTreeView()
+        self.tab1.charView.setRootIsDecorated(False)
+        self.tab1.charView.setModel(self.tab1.charModel)
+        self.tab1.charView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-#        print(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
-        
-#        self.tab1.characteristics.setModel(createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update))
+        self.tab1.charModel.setSourceModel(createCharacteristicsModel(self, id, name, failings, chars, keystrokes, clicks, scp, update))
+
+        layoutc = QGridLayout()
+        layoutc.addWidget(self.tab1.charView, 0, 0, 0, 0)
+
+        self.tab1.setLayout(layoutc)
+
+        self.tab1.show()
+
+        print("done")
+
+#        result = self.query(self.connection)
+
+#        firstEntry = result[0]
+#        print(firstEntry['fname'])
 
 
     # this is the view definition of the second tab
@@ -201,7 +206,7 @@ def addEntry(citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, ta
     citizenModel.setData(citizenModel.index(0, 6), socialCredit)
     citizenModel.setData(citizenModel.index(0, 7), letzteAktualisierung)
 
-def characteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update):
+def buildCharacteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update):
     characteristicsModel.insertColumn(0)
     characteristicsModel.setData(characteristicsModel.index(0, 0), id)
     characteristicsModel.setData(characteristicsModel.index(1, 0), name)
@@ -248,7 +253,7 @@ def createCitizenModel(parent):
     return citizenModel  
 
 def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update):
-    characteristicsModel = QStandardItemModel(8,1, parent)
+    characteristicsModel = QStandardItemModel(8,0, parent)
 
     characteristicsModel.setHeaderData(0, Qt.Vertical, "ID")
     characteristicsModel.setHeaderData(1, Qt.Vertical, "Name")
@@ -259,10 +264,9 @@ def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, cl
     characteristicsModel.setHeaderData(6, Qt.Vertical, "Social-Credit-Score")
     characteristicsModel.setHeaderData(7, Qt.Vertical, "zuletzt Aktualisiert")
 
-    characteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update)
+    buildCharacteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update)
 
     return characteristicsModel
-
 
 
 if __name__ == '__main__':
