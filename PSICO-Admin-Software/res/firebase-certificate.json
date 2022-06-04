@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "psico-software",
+  "private_key_id": "44a3129297f149d3c3d5fbf6e347da8d4166c527",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDjfF79lSNZZ0qc\nXM9E41vgr1txCdYclqdIa9/gucQBEjo0kLJLNuRaI0ubw9t8XP0uUyoMNxFTCS0y\nSHT/g4cAIFsuzTun6snBotbChyopDQj4gNTLCe5N32H7tOtR9g0gYyRQy1RAgvJN\nU5Wqx8oWfqxT9/paGlLy2PmI5kaps7DqmXwlvulECRNsMqLlymnXz+N3mfFSVDsE\nNQX33/OjTC6RX7n4c9F9pBeUQK9r3xnxKF6bhuJc0RbUapC7cUpeCYEGtJYG4egv\n1x3uSZWNkcsdozG3VEe5FJYa3c36ecNxNrU2WF8jEHbs2jBjIYHj4fCd2mAnA8L6\nu3EilWLhAgMBAAECggEAEz8Ux1Ycn0YIrzl/9MdaoOQdM69eHN2XKh6sWpZE8cVB\nxOxAFXJ/t+uYDEXyFi/E4Ow62L04+0JBv2kXcv3FCHr0U/2bsD2CU95r1pn6dG4s\npd+6gTImJhMB9nqMVUsgua6Bpk9JocqiZu3tMf2EyMnvWQxYM1LaVT8Lv6wh6t4G\n/CW1BLbFjfdsrGZeP1/wn7AbjDuAIDGHSBscLF9szRQG3MynMlonyIeZEIrxM2si\ntb/nEj2wWe+p5a/LWQxIOhpiuwrM+I9XGF0rKMT0EEmyySizvjYNWKPa6WLMpUPX\nfbPTakr/uJo/azGu7DsRd320tcAWHZsw5lcv5DK6RQKBgQD50eiWvrPgPJ/x0wt8\nnkAzfXJqwyPPvxNyXQQhBKTGfstDZhi7S1rzuezB6efgEUB50cn2dQd6dYoUYftU\noMo0l1TDwBUxdf28Api0dw87z6AgYQbOZiJeVNveanJMJw6S5/fafaFnJzAydK+t\nvtnZs63qUp5SsuByq3y7uypv5QKBgQDpHQWn/SCzGJBPt+xVfQfOR8Vmf5Jb5twE\n9MjKqD8yVifWNFZhj2HU1WqMxizqEdQ2DX7xFVhafzLLfSAh/absHP3+1CqPPq7i\nrTDz0P/5/2x8m7E/66R00L70LvwWHsqfTpVtyjqEcHTLcxI1Q93B5vJlf38kudQh\n2YfyP+EfTQKBgQDRoZT9OhWS6wyETkZrUhgpnPDwKcPZRku5Qdh/JHhooGlMq1XB\nhOBTeQb1SaRr384s6yAAkf+ugQdXR0kxoKNNMlfM01h1Yr+CjuM5PFcqJ3YE9aZS\neF4Krka6ArTatkOCfuj7DUTtXHMTQ9tPfsEr75zW7nEwkC3Ly58loU9hCQKBgQDH\nW5GNw9VmNLid5G4SAjZdvFVePfV98OXyuyDI56/8LWAuOV4yWvvQl59iusyIdSzl\n+Q65wIZqBmP7UIvdZd6OCJFTkEDBdlr78h9uNCvlsgImYsPoJW7kk+zqSRA/HqAs\nM3lphkwbHU1U/JjywpJwlEByeuHSF7YKKM2xZ93v9QKBgFowwhvKf3KhLCy+YYmV\n6O8Nt8V0/QbXs7TVZiR45FAPgLCqFecqNO+7GGc7kPBCipmNY35gmR0ndzjEF9mp\nAxJXowDScjZ3g3SRRciQaugVJtyAuHeZgJ6Tmo0c3ZfNBVNMDn8ZO/rUirb2y6Br\nmb/6jqhV6ksa2exzwOIAXzwO\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-9nkfp@psico-software.iam.gserviceaccount.com",
+  "client_id": "112691732338397025836",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-9nkfp%40psico-software.iam.gserviceaccount.com"
+}
