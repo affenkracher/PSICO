@@ -5,4 +5,4 @@ def createPopUp(title, msg, duration):
     toaster.show_toast(title, msg, duration=duration)
 
 #test
-#createPopUp("Hallo!", "Halllo Hallo!", 10)
+""" createPopUp("Hallo!", "Halllo Hallo!", 10) """
