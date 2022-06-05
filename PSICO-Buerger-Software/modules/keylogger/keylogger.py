@@ -15,8 +15,9 @@ def containes(line: str, sub: str):
 def wpm(lines: List[str], recordingEnd, recordingStart):
     words = []
     for line in lines:
-        words.append(line.split(" "))
-    wordsPerMinute = (len(words) * 60) / (recordingEnd - recordingStart)
+        words.extend(line.split(" "))
+    words = list(filter(None, words))
+    wordsPerMinute = len(words) / ((recordingEnd - recordingStart) / 60)
     return wordsPerMinute
 
 def similar(a: str, b: str):
@@ -76,12 +77,7 @@ class KeyLogger():
         keyEvaluation = {}
         for str in stringList:
             for c in str:
-                count = str.count(c)
-                if c not in keyEvaluation:
-                    keyEvaluation[c] = count
-                else:
-                    oldCount = keyEvaluation[c]
-                    keyEvaluation[c] = oldCount + count
+                keyEvaluation[c] = str.count(c)
         return keyEvaluation
 
     def deleteWord(self, word: str):
