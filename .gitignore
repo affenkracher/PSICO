@@ -1,7 +1,11 @@
 # VS Code folders
 .vscode/*
 */.vscode/*
+
+# Firebase Credentials
 /PSICO-Buerger-Software/res/firebaseCertificate.json
+
+# Module Caches
 /PSICO-Buerger-Software/modules/mouselogger/mouse/__pycache__/
 /PSICO-Buerger-Software/modules/keylogger/keyboard/__pycache__/
 /PSICO-Buerger-Software/modules/keylogger/__pycache__
