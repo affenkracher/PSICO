@@ -1,13 +1,29 @@
 from ctypes.wintypes import RGB
+from multiprocessing import connection
+from ssl import Options
 import sys
+import os
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 from PySide6.QtCore import QDate, QDateTime, QRegularExpression, QSortFilterProxyModel, QTime, Qt
 from PySide6.QtGui import QStandardItemModel, QIcon
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel,
-                                     QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView)
+
+CWD = os.getcwd()
 
 class Window(QTabWidget):
+
+    def queryConnect(self):
+        CERTIFICATE_FILE_PATH = CWD+'\\PSICO-Admin-Software\\res\\firebase-certificate.json'
+        CRED = credentials.Certificate(CERTIFICATE_FILE_PATH)
+        APP = firebase_admin.initialize_app(CRED, options = {'databaseURL':'https://psico-software-default-rtdb.europe-west1.firebasedatabase.app/'})
+        ref = db.reference('Citizen')
+        return ref
+
     def __init__(self, parent = None):
         super(Window, self).__init__(parent)
+        self.connection = self.queryConnect()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         self.tab3 = QWidget()
@@ -23,6 +39,25 @@ class Window(QTabWidget):
         self.setWindowTitle("PSICO Admin-Software")
         self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
         self.resize(900, 450)
+
+
+    def query(self, ref):
+        query = []
+        for doc in ref.get():
+            citizen_ref = ref.child(f'{doc}')
+            data = citizen_ref.get()
+            query.append(data)
+        return query
+
+
+    def queryAllCitizen(self, ref):
+        query = []
+        for doc in ref.get():
+            citizen_ref = ref.child(f'{doc}')
+            data = citizen_ref.get()
+            query.append(data)
+        return query
+        
 
     # this is the view definition of the first tab
     def tab1UI(self):
@@ -56,10 +91,15 @@ class Window(QTabWidget):
         self.tab1.filterColumnLabel = QLabel("Filter-Spalte:")
         self.tab1.filterColumnLabel.setBuddy(self.tab1.filterColumnComboBox)
 
+        self.tab1.characteristics = QTreeView()
+        self.tab1.characteristics.setRootIsDecorated(False)
+        self.tab1.characteristics.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
         self.tab1.filterPatternLineEdit.textChanged.connect(self.filterPatternChanged)
         self.tab1.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
         self.tab1.filterCaseSensitivityCheckBox.toggled.connect(self.filterPatternChanged)
         self.tab1.sortCaseSensitivityCheckBox.toggled.connect(self.sortCaseSensitivityChanged)
+        self.tab1.citizenListView.doubleClicked.connect(self.doubleClicked)
 
         self.tab1.citizenListView.sortByColumn(0, Qt.AscendingOrder)
         self.tab1.filterColumnComboBox.setCurrentIndex(1)
@@ -76,6 +116,32 @@ class Window(QTabWidget):
         layout.addWidget(self.tab1.filterCaseSensitivityCheckBox, 3, 0, 1, 2)
         layout.addWidget(self.tab1.sortCaseSensitivityCheckBox, 3, 1)
         self.tab1.setLayout(layout)
+
+    def doubleClicked(self,index):
+        id = index.siblingAtColumn(0)
+        name = index.siblingAtColumn(1)
+        failings = index.siblingAtColumn(2)
+        chars = index.siblingAtColumn(3)
+        keystrokes = index.siblingAtColumn(4)
+        clicks = index.siblingAtColumn(5)
+        scp = index.siblingAtColumn(6)
+        update = index.siblingAtColumn(7)
+
+        result = self.query(self.connection)
+
+        firstEntry = result[0]
+        print(firstEntry['fname'])
+        firstEntry = result[0]
+        print(firstEntry['lname'])
+        firstEntry = result[1]
+        print(firstEntry['fname'])
+        firstEntry = result[1]
+        print(firstEntry['lname'])
+
+#        print(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
+        
+#        self.tab1.characteristics.setModel(createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update))
+
 
     # this is the view definition of the second tab
     def tab2UI(self):
@@ -122,7 +188,7 @@ class Window(QTabWidget):
         else:
             caseSensitivity = Qt.CaseInsensitive
         self.tab1.citizenListModel.setSortCaseSensitivity(caseSensitivity)
-    
+
 
 def addEntry(citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, tastenanschlägeProMin, klicksProMin, socialCredit, letzteAktualisierung):
     citizenModel.insertRow(0)
@@ -134,6 +200,17 @@ def addEntry(citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, ta
     citizenModel.setData(citizenModel.index(0, 5), klicksProMin)
     citizenModel.setData(citizenModel.index(0, 6), socialCredit)
     citizenModel.setData(citizenModel.index(0, 7), letzteAktualisierung)
+
+def characteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update):
+    characteristicsModel.insertColumn(0)
+    characteristicsModel.setData(characteristicsModel.index(0, 0), id)
+    characteristicsModel.setData(characteristicsModel.index(1, 0), name)
+    characteristicsModel.setData(characteristicsModel.index(2, 0), failings)
+    characteristicsModel.setData(characteristicsModel.index(3, 0), chars)
+    characteristicsModel.setData(characteristicsModel.index(4, 0), keystrokes)
+    characteristicsModel.setData(characteristicsModel.index(5, 0), clicks)
+    characteristicsModel.setData(characteristicsModel.index(6, 0), scp)
+    characteristicsModel.setData(characteristicsModel.index(7, 0), update)
 
 
 def createCitizenModel(parent):
@@ -169,6 +246,23 @@ def createCitizenModel(parent):
     addEntry(citizenModel, 19, "Bürger11", 45, ''.join(["H","k","F","p","A"]), 93, 56, 189, QDateTime(QDate(2022, 5, 5), QTime(12, 0)))
 
     return citizenModel  
+
+def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update):
+    characteristicsModel = QStandardItemModel(8,1, parent)
+
+    characteristicsModel.setHeaderData(0, Qt.Vertical, "ID")
+    characteristicsModel.setHeaderData(1, Qt.Vertical, "Name")
+    characteristicsModel.setHeaderData(2, Qt.Vertical, "Verstöße")
+    characteristicsModel.setHeaderData(3, Qt.Vertical, "Eingabe")
+    characteristicsModel.setHeaderData(4, Qt.Vertical, "Anschläge pro Minute")
+    characteristicsModel.setHeaderData(5, Qt.Vertical, "Klicks pro Minute")
+    characteristicsModel.setHeaderData(6, Qt.Vertical, "Social-Credit-Score")
+    characteristicsModel.setHeaderData(7, Qt.Vertical, "zuletzt Aktualisiert")
+
+    characteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update)
+
+    return characteristicsModel
+
 
 
 if __name__ == '__main__':
