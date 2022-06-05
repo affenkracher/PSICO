@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import List
 import firebase_admin
 from firebase_admin import credentials
@@ -27,28 +26,47 @@ class QueryController():
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "r") as configFile:
                 configData = json.load(configFile)
                 self.queryId = configData["id"]
-                self.lastKeyLogID = configData["keyLogId"]
+                print(self.queryId)
+                self.lastKeyLogID = configData["lastKeyLogId"]
+                self.lastMouseLogID = configData["lastMouseLogId"]
         except:
             ID = self.insertQuery()
             dictionary = {
                 "id": ID,
-                "keyLogId": 0
+                "lastKeyLogId": 0,
+                "lastMouseLogId": 0
             }
-            json_object = json.dumps(dictionary, indent=4)
+            json_object = json.dumps(dictionary, indent=2)
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "w") as configFile:
                 configFile.write(json_object)
             self.queryId = ID
             self.lastKeyLogID = 0
+            self.lastMouseLogID = 0
 
     def onClose(self):
         CWD = os.getcwd()
         try:
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "w") as configFile:
                 dictionary = {
-                    "lastKeyLogID": self.lastKeyLogID
+                    "lastKeyLogId": self.lastKeyLogID,
+                    "lastMouseLogId": self.lastMouseLogID
                 }
-                json_object = json.dumps(dictionary, indent=4)
+                json_object = json.dumps(dictionary, indent=2)
                 configFile.write(json_object)
+        except:
+            print("Something went wrong")
+
+    def updateConfig(self, key, value):
+        CWD = os.getcwd()
+        try:
+            json_object = None
+            with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "r") as configData:
+                json_object = json.load(configData)
+                configData.close()
+            with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "w") as configFile:
+                json_object[key] = value
+                json.dump(json_object, configFile)
+                configFile.close()
         except:
             print("Something went wrong")
 
@@ -64,27 +82,27 @@ class QueryController():
             'FirstName': '',
             'KeyLogs':
                 {
-                    'log1': 'test3'
+                    '1': 'test3'
                 },
             'MouseLogs':
                 {
-                    'log1': 'test3'
+                    '1': 'test3'
                 },
             'CameraPictures':
                 {
-                    'log1': 'test3'
+                    '1': 'test3'
                 },
             'TaskLogs':
                 {
-                    'log1': 'test3'
+                    '1': 'test3'
                 },
             'Failings':
                 {
-                    'log1': 'test3'
+                    '1': 'test3'
                 },
             'IncriminatingMaterial':
                 {
-                    'log1': 'test3'
+                    '1': 'test3'
                 },
         })
         return CITIZEN_REF.key
@@ -110,10 +128,8 @@ class QueryController():
     def addToKeyLogs(self, log: List[str]):
         CITIZEN_REF = self.connection.child(self.queryId)
         KEY_LOGS_REF = CITIZEN_REF.child("KeyLogs")
+        data = KEY_LOGS_REF.get(False, True)
         ID = self.lastKeyLogID
-        data = KEY_LOGS_REF.get()
-        for doc in data:
-            print(doc)
         for l in log:
             print("Uploading", l)
             KEY_LOGS_REF.update({
@@ -121,3 +137,22 @@ class QueryController():
             })
             ID = ID + 1
         self.lastKeyLogID = ID
+        self.updateConfig("lastKeyLogId", ID)
+    
+    def addToMouseLogs(self, log):
+        CITIZEN_REF = self.connection.child(self.queryId)
+        MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
+        keys = [*MOUSE_LOGS_REF.get(False, True)]
+        for k1 in log:
+            dbVal = MOUSE_LOGS_REF.child(k1).get()
+            if dbVal is None:
+                print("initial upload", k1)
+                MOUSE_LOGS_REF.update({
+                    k1: log[k1]
+                })
+            else:
+                print("erhöhe counter ")
+                newVal = int(log[k1]) + int(dbVal)
+                MOUSE_LOGS_REF.update({
+                    k1: newVal
+                })
