@@ -25,15 +25,14 @@ class Window(QTabWidget):
         super(Window, self).__init__(parent)
         self.connection = self.queryConnect()
 
-        self.tabs = QTabWidget()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         self.tab3 = QWidget()
 
 
-        self.tabs.addTab(self.tab1,"Bürgeranalyse")
-        self.tabs.addTab(self.tab2,"Gesamtanalyse")
-        self.tabs.addTab(self.tab3,"Heatmaps")
+        self.addTab(self.tab1,"Bürgeranalyse")
+        self.addTab(self.tab2,"Gesamtanalyse")
+        self.addTab(self.tab3,"Heatmaps")
 
         self.tab1UI()
         self.tab2UI()
