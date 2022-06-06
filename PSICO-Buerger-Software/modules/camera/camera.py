@@ -1,43 +1,28 @@
-# Needed Modules
 import cv2
+import os
 
-path = "file"
+class CameraLogger():
+    def __init__(self, queryController):
+        self.queryController = queryController
+        self.storagePath = os.getcwd() + "\\PSICO-Buerger-Software\\modules\\camera\\storage\\"
 
-"""
-def connectCamera():
-    cam = cv2.VideoCapture(0)
-    if cam is None or not cam.isOpened():
-        print('Warning: no camera found')
-    else:
-        print('camera connected')
-        return cam
-"""
+    def takePicture(self, camera):
+        _, image = camera.read()
+        return image
 
-def takePicture(camera):
-    _, image = camera.read()
-    return image
+    def showPicture(self, image):
+        cv2.imshow('test.png',image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-def showPicture(image):
-    cv2.imshow('test.png',image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    def deleteCamera(self, camera):
+        del(camera)
 
-def deleteCamera(camera):
-    del(camera)
-
-def savePicture(path, picture):
-    cv2.imwrite(path, picture)
-
-
-def record():
-    cam = cv2.VideoCapture(0)
-    if cam is None or not cam.isOpened():
-        print('Warning: no camera found')
-    else:
-        print('camera connected')
-        showPicture(takePicture(cam))
-        #savePicture(path, takePicture(cam))
-        deleteCamera(cam)
-
-#test
-#record()
+    def record(self):
+        cam = cv2.VideoCapture(0)
+        if cam is None or not cam.isOpened():
+            print('Warning: no camera found')
+            return
+        picture = self.takePicture(cam)
+        self.queryController.addToCameraLog(picture)
+        self.deleteCamera(cam)

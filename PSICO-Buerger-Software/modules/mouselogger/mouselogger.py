@@ -1,20 +1,13 @@
-from webbrowser import get
 import mouse
-import time
 from screeninfo import get_monitors
 import math
-
-def record():
-    print(mouse.get_position())
 
 def translate(value, leftMin, leftMax, rightMin, rightMax):
     # Figure out how 'wide' each range is
     leftSpan = leftMax - leftMin
     rightSpan = rightMax - rightMin
-
     # Convert the left range into a 0-1 range (float)
     valueScaled = float(value - leftMin) / float(leftSpan)
-
     # Convert the 0-1 range into a value in the right range.
     return math.floor(rightMin + (valueScaled * rightSpan))
 
@@ -35,7 +28,6 @@ class MouseLogger():
         self.screenHeight = biggest.height
         self.screenWidth = biggest.width
 
-
     def main(self):
         recorder = self.recordMouse()
         counter = 0
@@ -44,11 +36,11 @@ class MouseLogger():
             x1 = translate(x, 0, self.screenWidth, 0, 1920 )
             y1 = translate(y, 0, self.screenHeight, 0, 1080)
             key = f'({x1},{y1})'
-            if rec not in self.log:
+            if rec not in self.log and counter % 300 == 0:
                 self.log[key] = 1
-            else:
+            elif rec in self.log and counter % 300 == 0:
                 self.log[key] = self.log[key] + 1
-            if counter > 0 and counter % 50000 == 0:
+            if counter % 5000 == 0:
                 counter = 0
                 self.queryController.addToMouseLogs(self.log)
             counter = counter + 1

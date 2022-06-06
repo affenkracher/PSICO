@@ -1,8 +1,9 @@
 from win10toast import ToastNotifier
 
-def createPopUp(title, msg, duration):    
-    toaster = ToastNotifier()
-    toaster.show_toast(title, msg, duration=duration)
+class PopUp():
+    def init(self):
+        self.alive = 1
 
-#test
-""" createPopUp("Hallo!", "Halllo Hallo!", 10) """
+    def createPopUp(self, title, msg, duration,):
+        toaster = ToastNotifier()
+        toaster.show_toast(title, msg, duration=duration)

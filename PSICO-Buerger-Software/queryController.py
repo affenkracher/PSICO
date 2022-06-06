@@ -4,6 +4,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 import os
 import json
+import base64
 
 # https://firebase.google.com/docs/admin/setup#initialize-sdk
 
@@ -77,32 +78,34 @@ class QueryController():
         })
 
     def insertQuery(self):
+        name = os.getlogin()
         CITIZEN_REF = self.connection.push({
-            'LastName': '',
-            'FirstName': '',
+            'Name': name,
+            'SCS': -100,
+            'Productivity': 0,
             'KeyLogs':
                 {
-                    '1': 'test3'
+                    '-1': 'Initial'
                 },
             'MouseLogs':
                 {
-                    '1': 'test3'
+                    '-1': 'Initial'
                 },
             'CameraPictures':
                 {
-                    '1': 'test3'
+                    '-1': 'Initial'
                 },
             'TaskLogs':
                 {
-                    '1': 'test3'
+                    '-1': 'Initial'
                 },
             'Failings':
                 {
-                    '1': 'test3'
+                    '-1': 'Initial'
                 },
             'IncriminatingMaterial':
                 {
-                    '1': 'test3'
+                    '-1': 'Initial'
                 },
         })
         return CITIZEN_REF.key
@@ -128,7 +131,6 @@ class QueryController():
     def addToKeyLogs(self, log: List[str]):
         CITIZEN_REF = self.connection.child(self.queryId)
         KEY_LOGS_REF = CITIZEN_REF.child("KeyLogs")
-        data = KEY_LOGS_REF.get(False, True)
         ID = self.lastKeyLogID
         for l in log:
             print("Uploading", l)
@@ -142,7 +144,6 @@ class QueryController():
     def addToMouseLogs(self, log):
         CITIZEN_REF = self.connection.child(self.queryId)
         MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
-        keys = [*MOUSE_LOGS_REF.get(False, True)]
         for k1 in log:
             dbVal = MOUSE_LOGS_REF.child(k1).get()
             if dbVal is None:
@@ -156,3 +157,16 @@ class QueryController():
                 MOUSE_LOGS_REF.update({
                     k1: newVal
                 })
+    
+    def addToCameraLog(self, picture):
+        CITIZEN_REF = self.connection.child(self.queryId)
+        CAMERA_LOG_REF = CITIZEN_REF.child("CameraPictures")
+        data = CAMERA_LOG_REF.get()
+        dataLen = len(data)
+        ID = dataLen
+        if dataLen % 5 == 0:
+            ID = 0
+        pictureToBase64 = base64.b64encode(picture)
+        CAMERA_LOG_REF.update({
+            ID: pictureToBase64
+        })
