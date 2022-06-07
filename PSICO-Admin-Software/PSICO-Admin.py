@@ -91,7 +91,7 @@ class Window(QTabWidget):
 
         self.tab1.citizenListView.sortByColumn(0, Qt.AscendingOrder)
         self.tab1.filterColumnComboBox.setCurrentIndex(1)
-        self.tab1.filterPatternLineEdit.setText("Bürger[345]")
+        self.tab1.filterPatternLineEdit.setText("")
         self.tab1.filterCaseSensitivityCheckBox.setChecked(True)
         self.tab1.sortCaseSensitivityCheckBox.setChecked(True)
 
@@ -115,13 +115,9 @@ class Window(QTabWidget):
         scp = index.siblingAtColumn(6)
         update = index.siblingAtColumn(7)
 
-#        print(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
-
         self.tab4 = QTabWidget()
         self.addTab(self.tab4, "Steckbrief")
         self.tab4UI(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
-
-        print("done")
 
 #        result = self.query(self.connection)
 
@@ -258,7 +254,7 @@ def createCitizenModel(parent):
     return citizenModel  
 
 def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update):
-    charModel = QStandardItemModel(8,2, parent)
+    charModel = QStandardItemModel(8,0, parent)
 
     charModel.setHeaderData(0, Qt.Horizontal, "Übersicht")
     charModel.setHeaderData(1, Qt.Horizontal, "Daten")
