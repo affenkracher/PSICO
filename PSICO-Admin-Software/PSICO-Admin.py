@@ -23,6 +23,7 @@ class Window(QTabWidget):
 
     def __init__(self, parent = None):
         super(Window, self).__init__(parent)
+        self.connection = self.queryConnect()
 
         self.tab1 = QWidget()
         self.tab2 = QWidget()
@@ -121,8 +122,7 @@ class Window(QTabWidget):
 
 #        result = self.query(self.connection)
 
-#        firstEntry = result[0]
-#        print(firstEntry['fname'])
+#        print(result)
 
 
     # this is the view definition of the second tab
