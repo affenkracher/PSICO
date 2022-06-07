@@ -4,7 +4,6 @@ import os
 Install every needed module of the PSICO-Buerger-Software, malwearing the PCs and
 laptops of c fans
 """
-
 os.system("pip install numpy")
 os.system("pip install psutil")
 os.system("pip install pandas")
