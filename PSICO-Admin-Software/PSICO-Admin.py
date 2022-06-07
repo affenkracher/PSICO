@@ -23,7 +23,6 @@ class Window(QTabWidget):
 
     def __init__(self, parent = None):
         super(Window, self).__init__(parent)
-        self.connection = self.queryConnect()
 
         self.tab1 = QWidget()
         self.tab2 = QWidget()
@@ -44,15 +43,6 @@ class Window(QTabWidget):
 
 
     def query(self, ref):
-        query = []
-        for doc in ref.get():
-            citizen_ref = ref.child(f'{doc}')
-            data = citizen_ref.get()
-            query.append(data)
-        return query
-
-
-    def queryAllCitizen(self, ref):
         query = []
         for doc in ref.get():
             citizen_ref = ref.child(f'{doc}')
@@ -125,7 +115,7 @@ class Window(QTabWidget):
         scp = index.siblingAtColumn(6)
         update = index.siblingAtColumn(7)
 
-        print(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
+#        print(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
 
         self.tab4 = QTabWidget()
         self.addTab(self.tab4, "Steckbrief")
@@ -215,15 +205,22 @@ def addEntry(citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, ta
     citizenModel.setData(citizenModel.index(0, 7), letzteAktualisierung)
 
 def buildCharacteristics(characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update):
-    characteristicsModel.insertColumn(0)
-    characteristicsModel.setData(characteristicsModel.index(0, 0), id)
-    characteristicsModel.setData(characteristicsModel.index(1, 0), name)
-    characteristicsModel.setData(characteristicsModel.index(2, 0), failings)
-    characteristicsModel.setData(characteristicsModel.index(3, 0), chars)
-    characteristicsModel.setData(characteristicsModel.index(4, 0), keystrokes)
-    characteristicsModel.setData(characteristicsModel.index(5, 0), clicks)
-    characteristicsModel.setData(characteristicsModel.index(6, 0), scp)
-    characteristicsModel.setData(characteristicsModel.index(7, 0), update)
+    characteristicsModel.setData(characteristicsModel.index(0, 0), "ID:")
+    characteristicsModel.setData(characteristicsModel.index(1, 0), "Name:")
+    characteristicsModel.setData(characteristicsModel.index(2, 0), "Verstöße:")
+    characteristicsModel.setData(characteristicsModel.index(3, 0), "zuletzt geschrieben:")
+    characteristicsModel.setData(characteristicsModel.index(4, 0), "Tasten pro Minute:")
+    characteristicsModel.setData(characteristicsModel.index(5, 0), "Klicks pro Minute:")
+    characteristicsModel.setData(characteristicsModel.index(6, 0), "Social-Credit-Score:")
+    characteristicsModel.setData(characteristicsModel.index(7, 0), "zuletzt aktualisiert:")
+    characteristicsModel.setData(characteristicsModel.index(0, 1), id)
+    characteristicsModel.setData(characteristicsModel.index(1, 1), name)
+    characteristicsModel.setData(characteristicsModel.index(2, 1), failings)
+    characteristicsModel.setData(characteristicsModel.index(3, 1), chars)
+    characteristicsModel.setData(characteristicsModel.index(4, 1), keystrokes)
+    characteristicsModel.setData(characteristicsModel.index(5, 1), clicks)
+    characteristicsModel.setData(characteristicsModel.index(6, 1), scp)
+    characteristicsModel.setData(characteristicsModel.index(7, 1), update)
 
 
 def createCitizenModel(parent):
@@ -261,16 +258,10 @@ def createCitizenModel(parent):
     return citizenModel  
 
 def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update):
-    charModel = QStandardItemModel(8,0, parent)
+    charModel = QStandardItemModel(8,2, parent)
 
-    charModel.setHeaderData(0, Qt.Vertical, "ID")
-    charModel.setHeaderData(1, Qt.Vertical, "Name")
-    charModel.setHeaderData(2, Qt.Vertical, "Verstöße")
-    charModel.setHeaderData(3, Qt.Vertical, "Eingabe")
-    charModel.setHeaderData(4, Qt.Vertical, "Anschläge pro Minute")
-    charModel.setHeaderData(5, Qt.Vertical, "Klicks pro Minute")
-    charModel.setHeaderData(6, Qt.Vertical, "Social-Credit-Score")
-    charModel.setHeaderData(7, Qt.Vertical, "zuletzt Aktualisiert")
+    charModel.setHeaderData(0, Qt.Horizontal, "Übersicht")
+    charModel.setHeaderData(1, Qt.Horizontal, "Daten")
 
     buildCharacteristics(charModel, id, name, failings, chars, keystrokes, clicks, scp, update)
 
