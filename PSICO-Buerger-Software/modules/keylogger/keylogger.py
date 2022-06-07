@@ -24,8 +24,9 @@ Calculate the words per minute of a list of strings
 def wpm(lines: List[str], recordingEnd, recordingStart):
     words = []
     for line in lines:
-        words.append(line.split(" "))
-    wordsPerMinute = (len(words) * 60) / (recordingEnd - recordingStart)
+        words.extend(line.split(" "))
+    words = list(filter(None, words))
+    wordsPerMinute = len(words) / ((recordingEnd - recordingStart) / 60)
     return wordsPerMinute
 
 """
