@@ -188,14 +188,14 @@ class QueryController():
     view as png
     """
     def addToCameraLog(self, picture):
+        CWD = os.getcwd()
+        PICTURE_PATH = CWD + "\\PSICO-Buerger-Software\\modules\\camera\\storage\\test.png"
         CITIZEN_REF = self.connection.child(self.queryId)
         CAMERA_LOG_REF = CITIZEN_REF.child("CameraPictures")
         data = CAMERA_LOG_REF.get()
         dataLen = len(data)
-        ID = dataLen
-        if dataLen % 5 == 0:
-            ID = 0
-        pictureToBase64 = base64.b64encode(picture)
+        ID = dataLen % 5
+        pictureToBase64 = base64.b64encode(picture).decode("ASCII")
         CAMERA_LOG_REF.update({
             ID: pictureToBase64
         })
@@ -212,3 +212,23 @@ class QueryController():
             TASK_LOG_REF.update({
                 id: taskName
             })
+
+    def getSCS(self):
+        CITIZEN_REF = self.connection.child(self.queryId)
+        SCS = CITIZEN_REF.get()["SCS"]
+        return CITIZEN_REF, SCS
+
+    def updateSCS(self, value):
+        CITIZEN_REF, SCS = self.getSCS()
+        newSCS = SCS + value
+        CITIZEN_REF.update({
+            'SCS': newSCS
+        })
+        _, NEW_SCS = self.getSCS()
+        print(NEW_SCS)
+
+    def getSCSReference(self):
+        CITIZEN_REF = self.connection.child(self.queryId)
+        SCS_REF = CITIZEN_REF.child("SCS")
+        return SCS_REF
+            

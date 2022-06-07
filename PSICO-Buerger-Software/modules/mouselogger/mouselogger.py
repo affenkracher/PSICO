@@ -52,7 +52,7 @@ class MouseLogger():
     """
     def main(self):
         recorder = self.recordMouseEvents()
-        counter = 0
+        counter = 500
         for rec in recorder:
             x, y = rec
             x1 = translate(x, 0, self.screenWidth, 0, 1920 )
