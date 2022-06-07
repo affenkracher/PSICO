@@ -8,9 +8,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 from PySide6.QtCore import QDate, QDateTime, QRegularExpression, QSortFilterProxyModel, QTime, Qt
 from PySide6.QtGui import QStandardItemModel, QIcon
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView)
-
-CWD = os.getcwd()
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow)
 
 class Window(QTabWidget):
 
@@ -276,10 +274,29 @@ def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, cl
 
     return charModel
 
+class PasswordWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        
+        self.setWindowTitle(" ")
+        self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
+        self.resize(170, 30)
+        
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
+        self.setCentralWidget(self.password)
+        self.password.editingFinished.connect(self.validatePassword)
+
+    def validatePassword(self):
+        if self.password.text() == 'admin':
+            self.window = Window()
+            self.window.setModels(createCitizenModel(self.window))
+            self.window.show()
+            self.close()
+            
 
 if __name__ == '__main__':
     app = QApplication()
-    window = Window()
-    window.setModels(createCitizenModel(window))
-    window.show()
+    startWindow = PasswordWindow()
+    startWindow.show()
     sys.exit(app.exec())
