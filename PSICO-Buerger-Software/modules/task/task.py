@@ -45,6 +45,6 @@ class Task():
     def killTask(self):
         for process in psutil.process_iter():
             if any(procstr in process.name() for procstr in\
-                ['Spotify', 'Firefox', 'Google Chrome']): #liste zu vervollständigen
+                ['Spotify', 'Firefox', 'Google Chrome', 'Netflix']): #liste zu vervollständigen
                     #print(f'Killing {process.name()}')
                     process.kill()
