@@ -1,6 +1,11 @@
 from dataclasses import dataclass
 from typing import List
 
+"""
+DataClasses are a quick and easy way to implement data-holding objects in Python,
+with all the getter, setter, equal and __str__ methods auto-generated.
+"""
+
 @dataclass
 class PingData:
     address: str
@@ -23,6 +28,12 @@ class MouseData:
     x: int
     y: int
     frequency: int
+
+"""
+The Citizen DataClass holds the information about the machines assigned citizen.
+It stores every logged input (Keyboard, Mouse, Tasks, ...) and allows quick and easy reference
+in other modules
+"""
 
 @dataclass
 class Citizen:

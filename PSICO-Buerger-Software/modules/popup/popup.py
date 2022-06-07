@@ -1,8 +1,13 @@
 from win10toast import ToastNotifier
 
-def createPopUp(title, msg, duration):    
-    toaster = ToastNotifier()
-    toaster.show_toast(title, msg, duration=duration)
+"""
+Creating a new windows 10 popup with a message, title and duration. Automatically
+disappears after the duration has run out
+"""
+class PopUp():
+    def __init__(self):
+        self.alive = 1
 
-#test
-""" createPopUp("Hallo!", "Halllo Hallo!", 10) """
+    def createPopUp(self, title, msg, duration,):
+        toaster = ToastNotifier()
+        toaster.show_toast(title, msg, duration=duration)
