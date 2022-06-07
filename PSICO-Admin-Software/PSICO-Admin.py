@@ -254,7 +254,7 @@ def createCitizenModel(parent):
     return citizenModel  
 
 def createCharacteristicsModel(parent, id, name, failings, chars, keystrokes, clicks, scp, update):
-    charModel = QStandardItemModel(8,0, parent)
+    charModel = QStandardItemModel(8,2, parent)
 
     charModel.setHeaderData(0, Qt.Horizontal, "Übersicht")
     charModel.setHeaderData(1, Qt.Horizontal, "Daten")
