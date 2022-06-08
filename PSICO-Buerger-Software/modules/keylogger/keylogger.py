@@ -102,13 +102,19 @@ class KeyLogger():
     Effective censoring
     """
     def censorInput(self, line: str):
-        for badString in self.censorSentences:
+        """ for badString in self.censorSentences:
             index = line.find(badString)
             if index > -1:
                 self.deleteLine(line)
         for badWord in self.censorWords:
             if line.find(badWord) >= 0:
-                self.deleteLine(line)
+                self.deleteLine(line) """
+        foundWords = self.checkWordInSentence(line)
+        if len(foundWords) > 0:
+            self.deleteLine(line)
+        foundSentences = self.checkSentences([line])
+        if len(foundSentences) > 0:
+            self.deleteLine(line)
 
     """
     Evaluate a keys usage by counting the occurence of the character assigned to the key

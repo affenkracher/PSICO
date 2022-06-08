@@ -2,6 +2,7 @@ from typing import List
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+from firebase_admin.db import Reference
 import os
 import json
 import base64
@@ -230,5 +231,11 @@ class QueryController():
     def getSCSReference(self):
         CITIZEN_REF = self.connection.child(self.queryId)
         SCS_REF = CITIZEN_REF.child("SCS")
+        SCS_REF.listen()
         return SCS_REF
+
+    def getIncriminitialReference(self) -> Reference:
+        CITIZEN_REF = self.connection.child(self.queryId)
+        INCRIMINATING_REF = CITIZEN_REF.child("IncriminatingMaterial")
+        return INCRIMINATING_REF
             

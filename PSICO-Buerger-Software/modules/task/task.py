@@ -4,7 +4,6 @@ import time
 
 class Task():
     def __init__(self, queryConnector, blackListTasks):
-        self.alive = 1
         self.queryConnector = queryConnector
         self.blackListTasks = blackListTasks
     
@@ -28,12 +27,12 @@ class Task():
                             continue
                     except psutil.AccessDenied:
                         continue
-                    
                 processes.append({
                     'pid': pid, 'name': name,  
                 })
+                if any(procstr in process.name() for procstr in self.blackListTasks):
+                    process.kill()
             yield processes
-            time.sleep(5 * 60)
 
     def killTask(self):
         for process in psutil.process_iter():
@@ -46,5 +45,6 @@ class Task():
         tasksGenerator = self.getTasks()
         for tasks in tasksGenerator:
             self.queryConnector.addToTaskLog(tasks)
-            time.sleep(2)
+            time.sleep(1)
             self.killTask()
+            time.sleep(5 * 60)

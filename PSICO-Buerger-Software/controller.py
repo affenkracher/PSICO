@@ -37,5 +37,5 @@ class CitizenController:
 Start the controller.py script by initializing a controller object and running the start method
 """
 if __name__ == "__main__":
-    CITIZEN_CONTROLLER = CitizenController(None,["awd"], ["jwt jwt"], ['Spotify', 'Google Chrome'])
+    CITIZEN_CONTROLLER = CitizenController(None,["awd"], ["jwt jwt"], ['Spotify', 'Netflix'])
     CITIZEN_CONTROLLER.start()
