@@ -8,44 +8,59 @@ from PySide6.QtCore import QDate, QDateTime, QRegularExpression, QSortFilterProx
 from PySide6.QtGui import QStandardItemModel, QIcon
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView)
 
+# Constant for current working directory
 CWD = os.getcwd()
 
+# Class for all GUI related operations and functions aka Model-View-Controller
 class Window(QTabWidget):
 
+#   creating a window via constructor method
     def __init__(self, parent = None):
         super(Window, self).__init__(parent)
 
+#   window contains its own model data handler
         self.admin_controller = AdminWatcher()
 
+#   window gets some tabwidgets as tabs
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         self.tab3 = QWidget()
 
+#   simple way of checking which view is currently present in tab1 via state variable
         self.tab1State = 0
+
+#   initially setting the database model to view all citizen
         self.citizenModel = self.updateCitizenModel()
 
+#   add tabs to the window
         self.addTab(self.tab1,"Bürgeranalyse")
         self.addTab(self.tab2,"Gesamtanalyse")
         self.addTab(self.tab3,"Heatmaps")
 
+#   initialize all tabs for presentation
         self.tab1UI()
         self.tab2UI()
         self.tab3UI()
 
+#   set datamodels for the different tabs
         self.setTab1Model(self.citizenModel)
         self.setTab2Model(self.updateCitizenModel())
         self.setTab3Model(self.updateCitizenModel())
         
+#   adjust window settings
         self.setWindowTitle("PSICO Admin-Software")
         self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
         self.resize(900, 450)
         
 
-    # this is the view definition of the first tab
+#   building tab1's foundation
     def tab1UI(self):
+
+#   creating a basic datamodel
         self.tab1.citizenListModel = QSortFilterProxyModel()
         self.tab1.citizenListModel.setDynamicSortFilter(True)
 
+#   creating a viewing model
         self.tab1.citizenListView = QTreeView()
         self.tab1.citizenListView.setRootIsDecorated(False)
         self.tab1.citizenListView.setAlternatingRowColors(True)
@@ -53,14 +68,17 @@ class Window(QTabWidget):
         self.tab1.citizenListView.setSortingEnabled(True)
         self.tab1.citizenListView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
+#   creating checkboxes for the filter functions
         self.tab1.sortCaseSensitivityCheckBox = QCheckBox("Case-sensitive Sortierung")
         self.tab1.filterCaseSensitivityCheckBox = QCheckBox("Case-sensitiver Filter")
 
+#   create filter input field including a clear input button and connect a label
         self.tab1.filterPatternLineEdit = QLineEdit()
         self.tab1.filterPatternLineEdit.setClearButtonEnabled(True)
         self.tab1.filterPatternLabel = QLabel("Filter (RegEx):")
         self.tab1.filterPatternLabel.setBuddy(self.tab1.filterPatternLineEdit)
 
+#   create a dropdown menu to filter on different columns and connect a label
         self.tab1.filterColumnComboBox = QComboBox()
         self.tab1.filterColumnComboBox.addItem("ID")
         self.tab1.filterColumnComboBox.addItem("Name")
@@ -73,18 +91,21 @@ class Window(QTabWidget):
         self.tab1.filterColumnLabel = QLabel("Filter-Spalte:")
         self.tab1.filterColumnLabel.setBuddy(self.tab1.filterColumnComboBox)
 
+#   connect functions to the different control elements
         self.tab1.filterPatternLineEdit.textChanged.connect(self.filterPatternChanged)
         self.tab1.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
         self.tab1.filterCaseSensitivityCheckBox.toggled.connect(self.filterPatternChanged)
         self.tab1.sortCaseSensitivityCheckBox.toggled.connect(self.sortCaseSensitivityChanged)
         self.tab1.citizenListView.doubleClicked.connect(self.doubleClicked)
 
+#   default settings for the control elements
         self.tab1.citizenListView.sortByColumn(0, Qt.AscendingOrder)
         self.tab1.filterColumnComboBox.setCurrentIndex(1)
         self.tab1.filterPatternLineEdit.setText("")
         self.tab1.filterCaseSensitivityCheckBox.setChecked(True)
         self.tab1.sortCaseSensitivityCheckBox.setChecked(True)
 
+#   define a layout, add created widgets and assign it to the tab
         layout = QGridLayout()
         layout.addWidget(self.tab1.citizenListView, 0, 0, 1, 3)
         layout.addWidget(self.tab1.filterPatternLabel, 1, 0)
@@ -95,10 +116,14 @@ class Window(QTabWidget):
         layout.addWidget(self.tab1.sortCaseSensitivityCheckBox, 3, 1)
         self.tab1.setLayout(layout)
 
+        
+#   defines what happens if a citizen entry is double clicked
     def doubleClicked(self,index):
 
+#   checking if in all citizen view mode
         if(self.tab1State == 0):
 
+#   fetching data from the double clicked entry
             id = index.siblingAtColumn(0)
             name = index.siblingAtColumn(1)
             failings = index.siblingAtColumn(2)
@@ -108,42 +133,50 @@ class Window(QTabWidget):
             scp = index.siblingAtColumn(6)
             update = index.siblingAtColumn(7)
 
+#   build a characteristics page for the selected entry and set tab1State to 1 for characteristics view
             self.charViewUI(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
             self.tab1State = 1
-            print(self.tab1State)
 
         else:
 
+#   return to all view mode if in characteristics view #subject to change
             self.setTab1Model(self.citizenModel)
             self.tab1State = 0
-            print(self.tab1State)
 #            self.admin_controller.getAllCitizenInfo(self.admin_controller.getAllCitizen(self.admin_controller.connection))
 
 
-    # this is the view definition of the second tab
+#   building tab2's foundation
     def tab2UI(self):
+
+#   create a datamodel
         self.tab2.totalsModel = QSortFilterProxyModel()
         self.tab2.totalsModel.setDynamicSortFilter(True)
 
+#   create a view model
         self.tab2.totalsView = QTreeView()
         self.tab2.totalsView.setRootIsDecorated(False)
-        
+
+#   set the layout and add created widgets   
         layout = QGridLayout()
         layout.addWidget(self.tab2.totalsView, 0, 0, 0, 0)
         self.tab2.setLayout(layout)
 
-    # this is the view definition of the third tab
+#   build tab3's foundation
     def tab3UI(self):
+#   create a datamodel
         self.tab3.heatMapModel = QSortFilterProxyModel()
         self.tab3.heatMapModel.setDynamicSortFilter(True)
 
+#   create a view model
         self.tab3.heatmapView = QTreeView()
         self.tab3.heatmapView.setRootIsDecorated(False)
         
+#   set layout and add created widgets
         layout = QGridLayout()
         layout.addWidget(self.tab3.heatmapView, 0, 0, 0, 0)
         self.tab3.setLayout(layout)
 
+#   create a one time use characteristics model and view from data passed from the view
     def charViewUI(self, id, name, failings, chars, keystrokes, clicks, scp, update):
         self.tab1.charModel = QSortFilterProxyModel()
         self.tab1.charModel.setDynamicSortFilter(True)
@@ -155,15 +188,13 @@ class Window(QTabWidget):
 
         self.setTab1Model(self.createCharacteristicsModel(id, name, failings, chars, keystrokes, clicks, scp, update))
 
-#        self.tab4.charModel.setSourceModel(self.createCharacteristicsModel(self, id, name, failings, chars, keystrokes, clicks, scp, update))
-
         layoutc = QGridLayout()
         layoutc.addWidget(self.tab1.charView, 0, 0, 0, 0)
 
         self.tab1.setLayout(layoutc)
         
 
-    # the model is beeing connected to the tree views
+#   methods to quickly set models in the tabs
     def setTab1Model(self, model):
         self.tab1.citizenListModel.setSourceModel(model)
 
@@ -173,7 +204,7 @@ class Window(QTabWidget):
     def setTab3Model(self, model):
         self.tab3.heatMapModel.setSourceModel(model)
 
-    # reaction on userchanges on the filter pattern 
+#   reaction on changes in the filter input field
     def filterPatternChanged(self):
         pattern = self.tab1.filterPatternLineEdit.text()
         reg_exp = QRegularExpression(pattern)
@@ -183,11 +214,11 @@ class Window(QTabWidget):
             reg_exp.setPatternOptions(options)
         self.tab1.citizenListModel.setFilterRegularExpression(reg_exp)
 
-    # reaction on userchanges on the filter column combo box
+#   reaction on the filter column dropdown menu
     def filterColumnChanged(self):
         self.tab1.citizenListModel.setFilterKeyColumn(self.tab1.filterColumnComboBox.currentIndex())
 
-    # reaction on userchanges on the sort case sensitivity check box
+#   reaction on the case sensitivity checkboxes
     def sortCaseSensitivityChanged(self):
         if self.tab1.sortCaseSensitivityCheckBox.isChecked():
             caseSensitivity = Qt.CaseSensitive
@@ -195,7 +226,7 @@ class Window(QTabWidget):
             caseSensitivity = Qt.CaseInsensitive
         self.tab1.citizenListModel.setSortCaseSensitivity(caseSensitivity)
 
-
+#   method for adding entries in the current datamodel
     def addEntry(self, citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, tastenanschlägeProMin, klicksProMin, socialCredit, letzteAktualisierung):
         citizenModel.insertRow(0)
         citizenModel.setData(citizenModel.index(0, 0), id)
@@ -207,6 +238,7 @@ class Window(QTabWidget):
         citizenModel.setData(citizenModel.index(0, 6), socialCredit)
         citizenModel.setData(citizenModel.index(0, 7), letzteAktualisierung)
 
+#   method for building the characteristics view
     def buildCharacteristics(self, characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update):
         characteristicsModel.setData(characteristicsModel.index(0, 0), "ID:")
         characteristicsModel.setData(characteristicsModel.index(1, 0), "Name:")
@@ -225,7 +257,7 @@ class Window(QTabWidget):
         characteristicsModel.setData(characteristicsModel.index(6, 1), scp)
         characteristicsModel.setData(characteristicsModel.index(7, 1), update)
 
-
+#   method for building the citizen datamodel
     def updateCitizenModel(self):
 
         self.citizenModel = QStandardItemModel(0, 8, self)
@@ -243,7 +275,7 @@ class Window(QTabWidget):
         
         return self.citizenModel
 
-
+#   method for building characteristics data model  
     def createCharacteristicsModel(self, id, name, failings, chars, keystrokes, clicks, scp, update):
         charModel = QStandardItemModel(8,2, self)
 
@@ -254,7 +286,7 @@ class Window(QTabWidget):
 
         return charModel
 
-
+#   main method for running the application
 if __name__ == '__main__':
     app = QApplication()
     window = Window()
