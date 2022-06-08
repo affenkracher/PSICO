@@ -27,8 +27,18 @@ class AdminWatcher():
         for doc in ref.get():
             citizen_ref = ref.child(f'{doc}')
             data = citizen_ref.get()
-            query.append(data)
+            citizen_id = doc
+            query.append((citizen_id, data))
         return query
+
+    def getAllCitizenInfo(self, query):
+        citizenList = []
+        for i,q in query:
+            if(isinstance(q, dict)):
+                info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i}
+                citizenList.append(info)
+                print(info)
+
 
 
 #    getCitizen(id):
