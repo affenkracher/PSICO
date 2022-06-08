@@ -18,32 +18,31 @@ class AdminWatcher():
     def __init__(self) -> None:
         self.connection = self.queryConnect()
 
-#        self.citizen = hier alle Bürgerdaten holen
-#        main()
 
-
-    def getAllCitizen(self, ref):
+    def query(self):
         query = []
-        for doc in ref.get():
-            citizen_ref = ref.child(f'{doc}')
+        for doc in self.connection.get():
+            citizen_ref = self.connection.child(f'{doc}')
             data = citizen_ref.get()
             citizen_id = doc
             query.append((citizen_id, data))
         return query
 
-    def getAllCitizenInfo(self, query):
+    def getOneCitizen(self, id):
+        for i, q in self.query():
+            if(isinstance(q, dict)):
+                if(i == id):
+                    citizen = {'Name':q['Name'], 'SCS':q['SCS']}
+                    return citizen
+
+
+    def getAllCitizenInfo(self):
         citizenList = []
-        for i,q in query:
+        for i,q in self.query():
             if(isinstance(q, dict)):
                 info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i}
                 citizenList.append(info)
                 print(info)
-
-
-
-#    getCitizen(id):
-#       specitizen = self.citizen[id]
-#       return specitizen
 
 #    setSocialCredit(id, newSCP):
 #       specitizen = getCitizen(id)
