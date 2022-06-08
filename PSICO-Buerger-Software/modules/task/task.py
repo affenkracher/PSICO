@@ -37,7 +37,7 @@ class Task():
     def killTask(self):
         for process in psutil.process_iter():
             if any(procstr in process.name() for procstr in\
-                self.blackListTasks): #liste zu vervollständigen
+                self.blackListTasks):
                     #print(f'Killing {process.name()}')
                     process.kill()
 

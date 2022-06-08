@@ -95,6 +95,8 @@ class QueryController():
             'Name': name,
             'SCS': -100,
             'Productivity': 0,
+            'CPM': 0,
+            'WPM': 0,
             'KeyLogs':
                 {
                     '-1': 'Initial'
@@ -119,6 +121,10 @@ class QueryController():
                 {
                     '-1': 'Initial'
                 },
+            'KeyEvaluation':
+                {
+                    '-1': 'Initial'
+                }
         })
         return CITIZEN_REF.key
 
@@ -238,4 +244,3 @@ class QueryController():
         CITIZEN_REF = self.connection.child(self.queryId)
         INCRIMINATING_REF = CITIZEN_REF.child("IncriminatingMaterial")
         return INCRIMINATING_REF
-            

@@ -63,11 +63,18 @@ class MouseLogger():
             elif rec in self.log:
                 self.log[key] = self.log[key] + 1
             counter = counter + 1
-            if counter >= 500:
+            if counter >= 100:
                 self.queryController.addToMouseLogs(self.log)
                 self.log = {}
                 counter = 0
 
+    def clickCounter(self):
+        counter = 0
+        increment = lambda: counter + 1
+        while 1: 
+            mouse.on_click(counter, ())
+        return counter
+        
     """
     Return the position of the mouse every 2 sec, toa reduce the amount of data, otherwise a multiple of 10000
     data pairs isnt abnormal
