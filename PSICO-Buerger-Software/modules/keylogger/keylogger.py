@@ -4,6 +4,10 @@ import time
 from difflib import SequenceMatcher
 
 """
+Keylogger, Ideas and shortcomings listed by Prof. Kruse were tried to be heard
+"""
+
+"""
 SHIFT_PUNCTUATION is a key literal list containing every shift + key combination
 """
 SHIFT_PUNCTUATION = ['!', '"', '§', '$', '%', '&', '/', '(', ')', '=', '?', ';', ':', '_', '`', '*', '\'']
