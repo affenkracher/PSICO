@@ -1,6 +1,9 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 import time
 import os
 
@@ -50,6 +53,28 @@ class AdminWatcher():
 
     def endUpdates(self):
         self.operating = 0
+        
+    def generateHeatmap(self, dictionary):
+        ser = pd.Series(list(dictionary.values()), index=pd.MultiIndex.from_tuples(dictionary.keys()))
+        dataframe = ser.unstack().fillna(0)
+        sns.heatmap(dataframe, xticklabels=False, yticklabels=False, cbar=False)
+        # plt.savefig('output.png')
+        plt.show()
+    
+    def getData(self):
+        keys = [self.connection.get()][:-1]
+        mouseData = {}
+        for key in keys:
+            CITIZEN_REF = self.querryConnection.child(key)
+            MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
+            mousePositions = [MOUSE_LOGS_REF.get()].remove("-1")
+            for pos in mousePositions:
+                freq = MOUSE_LOGS_REF.get()[pos]
+                temp1 = pos.split(",")
+                x = int(temp1[1:])
+                y = int(temp1[:-1])
+                mouseData[(x,y)] = freq
+        return mouseData
 
 
 #    def calculateKeysPressed(Citizen):
