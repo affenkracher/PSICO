@@ -231,7 +231,7 @@ class QueryController():
         CITIZEN_REF.update({
             'SCS': newSCS
         })
-        _, NEW_SCS = self.getSCS()
+        NEW_SCS = self.getSCS()
         print(NEW_SCS)
 
     def getSCSReference(self):
