@@ -57,22 +57,49 @@ class AdminWatcher():
     def generateHeatmap(self, dictionary):
         ser = pd.Series(list(dictionary.values()), index=pd.MultiIndex.from_tuples(dictionary.keys()))
         dataframe = ser.unstack().fillna(0)
-        sns.heatmap(dataframe, xticklabels=False, yticklabels=False, cbar=False)
+        sns.set(rc = {'figure.figsize':(12.8,7.2)})
+        sns.heatmap(dataframe, xticklabels=False, yticklabels=False, cbar=False, vmin=0, vmax=200, cmap="rocket")
         # plt.savefig('output.png')
         plt.show()
     
-    def getData(self):
-        keys = [self.connection.get()][:-1]
+    def getComulatedMouseData(self):
+        keys = [*self.connection.get()][:-1]
         mouseData = {}
         for key in keys:
-            CITIZEN_REF = self.querryConnection.child(key)
+            CITIZEN_REF = self.connection.child(key)
             MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
-            mousePositions = [MOUSE_LOGS_REF.get()].remove("-1")
-            for pos in mousePositions:
-                freq = MOUSE_LOGS_REF.get()[pos]
-                temp1 = pos.split(",")
-                x = int(temp1[1:])
-                y = int(temp1[:-1])
+            mousePositions = [*MOUSE_LOGS_REF.get()]
+            data = MOUSE_LOGS_REF.get()
+            for pos in mousePositions: 
+                if pos == '-1':
+                    continue
+                freq = data[pos]
+                temp1 = pos[1:-1].split(',')
+                x = int(temp1[0])
+                y = int(temp1[1])
+                if (x,y) in mouseData:
+                    mouseData[(x,y)] = mouseData[(x,y)] + freq
+                else:
+                    mouseData[(x,y)] = freq
+        return mouseData
+    
+    def getCitizenMouseData(self, citizenId):
+        print(citizenId)
+        mouseData = {}
+        CITIZEN_REF = self.connection.child(citizenId)
+        MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
+        mousePositions = [*MOUSE_LOGS_REF.get()]
+        data = MOUSE_LOGS_REF.get()
+        for pos in mousePositions: 
+            if pos == '-1':
+                continue
+            freq = data[pos]
+            temp1 = pos[1:-1].split(',')
+            x = int(temp1[0])
+            y = int(temp1[1])
+            if (x,y) in mouseData:
+                mouseData[(x,y)] = mouseData[(x,y)] + freq
+            else:
                 mouseData[(x,y)] = freq
         return mouseData
 

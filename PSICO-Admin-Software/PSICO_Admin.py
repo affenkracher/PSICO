@@ -20,6 +20,9 @@ class Window(QTabWidget):
         # window contains its own model data handler
         self.adminController = AdminWatcher()
 
+        # self.adminController.generateHeatmap(self.adminController.getComulatedMouseData())
+        
+
         # window gets some tabwidgets as tabs
         self.tab1 = QWidget()
         self.tab2 = QWidget()
@@ -56,6 +59,8 @@ class Window(QTabWidget):
 
     # building tab1's foundation
     def tab1UI(self):
+        
+        self.tab1.lastCitizenId = " "
 
         # creating a basic datamodel
         self.tab1.citizenListModel = QSortFilterProxyModel()
@@ -79,11 +84,18 @@ class Window(QTabWidget):
         self.tab1.filterPatternLabel = QLabel("Filter (RegEx):")
         self.tab1.filterPatternLabel.setBuddy(self.tab1.filterPatternLineEdit)
 
+        # return button to get back to general citizen view
         self.tab1.backButton = QPushButton()
         self.tab1.backButton.setText('X')
         self.tab1.backButton.setFixedSize(20, 20)
         self.tab1.backButton.hide()
         self.tab1.backButton.clicked.connect(self.backToCitizenView)
+        
+        # button to generate the citizen mouse heatmap
+        self.tab1.heatmapButton = QPushButton()
+        self.tab1.heatmapButton.setText('Generiere eine Maus-Heatmap!')
+        self.tab1.heatmapButton.setFixedSize(180, 25)
+        self.tab1.heatmapButton.hide()
 
         # create a dropdown menu to filter on different columns and connect a label
         self.tab1.filterColumnComboBox = QComboBox()
@@ -103,6 +115,7 @@ class Window(QTabWidget):
         self.tab1.filterCaseSensitivityCheckBox.toggled.connect(self.filterPatternChanged)
         self.tab1.sortCaseSensitivityCheckBox.toggled.connect(self.sortCaseSensitivityChanged)
         self.tab1.citizenListView.doubleClicked.connect(self.createSpecificCitizenView)
+        self.tab1.heatmapButton.clicked.connect(self.heatmapTest)
 
         # default settings for the control elements
         self.tab1.citizenListView.sortByColumn(0, Qt.AscendingOrder)
@@ -113,7 +126,8 @@ class Window(QTabWidget):
 
         # define a layout, add created widgets and assign it to the tab
         layout = QGridLayout()
-        layout.addWidget(self.tab1.backButton, 0, 3, 1, 1)
+        layout.addWidget(self.tab1.backButton, 0, 2)
+        layout.addWidget(self.tab1.heatmapButton, 2, 1)
         layout.addWidget(self.tab1.citizenListView, 1, 0, 1, 3)
         layout.addWidget(self.tab1.filterPatternLabel, 2, 0)
         layout.addWidget(self.tab1.filterPatternLineEdit, 2, 1, 1, 2)
@@ -123,10 +137,13 @@ class Window(QTabWidget):
         layout.addWidget(self.tab1.sortCaseSensitivityCheckBox, 4, 1)
         self.layoutAll = layout
         self.tab1.setLayout(layout)
+    
+    def heatmapTest(self):
+        self.adminController.generateHeatmap(self.adminController.getCitizenMouseData(self.tab1.lastCitizenId))
 
         
     # creates a detailed view of a specific citizen entry
-    def createSpecificCitizenView(self,index):
+    def createSpecificCitizenView(self, index):
 
         if self.tab1State == 0:
 
@@ -138,11 +155,11 @@ class Window(QTabWidget):
             keystrokes = index.siblingAtColumn(4)
             clicks = index.siblingAtColumn(5)
             scp = index.siblingAtColumn(6)
+            
+            self.tab1.lastCitizenId = id.data()
 
             # build a characteristics page for the selected entry and set tab1State to 1 for characteristics view
-            self.charViewUI(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data())
             self.tab1State = 1
-            self.tab1.backButton.show()
             
             self.tab1.filterColumnComboBox.hide()
             self.tab1.filterPatternLineEdit.hide()
@@ -150,6 +167,12 @@ class Window(QTabWidget):
             self.tab1.sortCaseSensitivityCheckBox.hide()
             self.tab1.filterColumnLabel.hide()
             self.tab1.filterPatternLabel.hide()
+            
+            self.tab1.backButton.show()
+            self.tab1.heatmapButton.show()
+            
+            self.charViewUI(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data())
+            
 
     # return to all view mode if in characteristics view #subject to change
     def backToCitizenView(self):
@@ -158,6 +181,7 @@ class Window(QTabWidget):
             self.setTab1Model(self.citizenModel)
             self.tab1State = 0
             self.tab1.backButton.hide()
+            self.tab1.heatmapButton.hide()
             
             self.tab1.filterColumnComboBox.show()
             self.tab1.filterPatternLineEdit.show()
@@ -312,7 +336,7 @@ class Window(QTabWidget):
 
         return charModel
 
-# class the authentication
+# class for the authentication
 class PasswordWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -328,7 +352,7 @@ class PasswordWindow(QMainWindow):
 
     # method to validate the passwort entry and to start the main program
     def validatePassword(self):
-        if self.password.text() == '':
+        if self.password.text() == 'admin':
             self.window = Window()
             self.window.show()
             self.close()
