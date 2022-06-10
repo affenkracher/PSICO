@@ -31,6 +31,7 @@ class Window(QTabWidget):
 
 #   simple way of checking which view is currently present in tab1 via state variable
         self.tab1State = 0
+        self.doubles = 0
 
 #   initially setting the database model to view all citizen
         self.citizenModel = self.updateCitizenModel()
@@ -86,7 +87,7 @@ class Window(QTabWidget):
         self.tab1.backButton.setText('X')
         self.tab1.backButton.setFixedSize(20, 20)
         self.tab1.backButton.hide()
-        self.tab1.backButton.clicked.connect(self.backToAll())
+        self.tab1.backButton.clicked.connect(self.backToAll)
 
 #   create a dropdown menu to filter on different columns and connect a label
         self.tab1.filterColumnComboBox = QComboBox()
@@ -153,9 +154,9 @@ class Window(QTabWidget):
         if self.tab1State == 1:
 
 #   return to all view mode if in characteristics view #subject to change
-                self.setTab1Model(self.citizenModel)
-                self.tab1State = 0
-                self.tab1.backButton.hide()
+            self.setTab1Model(self.citizenModel)
+            self.tab1State = 0
+            self.tab1.backButton.hide()
 
 
 #   building tab2's foundation
