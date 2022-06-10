@@ -15,8 +15,9 @@ class SocialCreditController():
         self.socialCreditScoreReference = queryController.getSCSReference()
         self.incriminitialReference = queryController.getIncriminitialReference()
 
-    def main():
-        pass
+    def main(self):
+        while 1:
+            print(self.socialCreditScoreReference.get())
 
     def watch(self):
         self.socialCreditScoreReference.listen()
