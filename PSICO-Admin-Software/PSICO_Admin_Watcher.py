@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+import time
 import os
 
 CWD = os.getcwd()
@@ -16,7 +17,7 @@ class AdminWatcher():
 
     def __init__(self) -> None:
         self.connection = self.queryConnect()
-
+        self.allCitizenData = self.getAllCitizenInfo()
 
     def query(self):
         query = []
@@ -28,30 +29,28 @@ class AdminWatcher():
         return query
 
     def getOneCitizen(self, id):
-        for i, q in self.query():
+        for i, q in self.query(self):
             if(isinstance(q, dict)):
                 if(i == id):
-                    citizen = {'Name':q['Name'], 'SCS':q['SCS']}
+                    citizen = {'Name':q['Name'], 'SCS':q['SCS'], 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
                     return citizen
-
 
     def getAllCitizenInfo(self):
         citizenList = []
         for i,q in self.query():
             if(isinstance(q, dict)):
-                info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i}
+                info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
                 citizenList.append(info)
-                print(info)
+        return citizenList
 
-#    setSocialCredit(id, newSCP):
-#       specitizen = getCitizen(id)
-#       specitizen["scp"] = newSCP
-#       in die Datenbank zurückschreiben
-    
-#    def buildHeatmap(coordinates):
-#      calc coordinates together
-#      build heatmap view
-#      return heatmap
+    def updateCitizenData(self):
+        while(self.operating == 1):
+            time.sleep(30)
+            self.allCitizenData = self.getAllCitizenInfo()
+
+    def endUpdates(self):
+        self.operating = 0
+
 
 #    def calculateKeysPressed(Citizen):
 #       parse keypresses
@@ -61,10 +60,3 @@ class AdminWatcher():
 #   def calculateAllKeysPressed():
 #       iterate calculateKeyPressed on all Citizen
 #       return cumulated dictionary
-
-#   def buildBigHeatmap():
-#       iterate buildHeatmap on all Citizen
-#       return cumulated heatmap
-
-#   def main():
-#       while(windowIsOpen):  

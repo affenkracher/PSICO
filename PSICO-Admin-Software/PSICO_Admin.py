@@ -1,12 +1,15 @@
 from ctypes.wintypes import RGB
+from itertools import count
 from multiprocessing import connection
+from re import X
 from ssl import Options
+from turtle import update
 from PSICO_Admin_Watcher import AdminWatcher
 import sys
 import os
 from PySide6.QtCore import QDate, QDateTime, QRegularExpression, QSortFilterProxyModel, QTime, Qt
 from PySide6.QtGui import QStandardItemModel, QIcon
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QStackedLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow, QPushButton)
 
 # Constant for current working directory
 CWD = os.getcwd()
@@ -31,6 +34,7 @@ class Window(QTabWidget):
 
 #   initially setting the database model to view all citizen
         self.citizenModel = self.updateCitizenModel()
+        self.addAllCitizen(self.admin_controller.getAllCitizenInfo())
 
 #   add tabs to the window
         self.addTab(self.tab1,"Bürgeranalyse")
@@ -78,16 +82,21 @@ class Window(QTabWidget):
         self.tab1.filterPatternLabel = QLabel("Filter (RegEx):")
         self.tab1.filterPatternLabel.setBuddy(self.tab1.filterPatternLineEdit)
 
+        self.tab1.backButton = QPushButton()
+        self.tab1.backButton.setText('X')
+        self.tab1.backButton.setFixedSize(20, 20)
+        self.tab1.backButton.hide()
+        self.tab1.backButton.clicked.connect(self.backToAll())
+
 #   create a dropdown menu to filter on different columns and connect a label
         self.tab1.filterColumnComboBox = QComboBox()
         self.tab1.filterColumnComboBox.addItem("ID")
         self.tab1.filterColumnComboBox.addItem("Name")
         self.tab1.filterColumnComboBox.addItem("Anzahl Verstöße")
-        self.tab1.filterColumnComboBox.addItem("Eingegebene Buchstaben")
+        self.tab1.filterColumnComboBox.addItem("Verbrechen")
         self.tab1.filterColumnComboBox.addItem("Tastenanschläge / min")
         self.tab1.filterColumnComboBox.addItem("Klicks / min")
         self.tab1.filterColumnComboBox.addItem("Social-Credit-Punkte")
-        self.tab1.filterColumnComboBox.addItem("letzte Aktualisierung")
         self.tab1.filterColumnLabel = QLabel("Filter-Spalte:")
         self.tab1.filterColumnLabel.setBuddy(self.tab1.filterColumnComboBox)
 
@@ -107,21 +116,22 @@ class Window(QTabWidget):
 
 #   define a layout, add created widgets and assign it to the tab
         layout = QGridLayout()
-        layout.addWidget(self.tab1.citizenListView, 0, 0, 1, 3)
-        layout.addWidget(self.tab1.filterPatternLabel, 1, 0)
-        layout.addWidget(self.tab1.filterPatternLineEdit, 1, 1, 1, 2)
-        layout.addWidget(self.tab1.filterColumnLabel, 2, 0)
-        layout.addWidget(self.tab1.filterColumnComboBox, 2, 1, 1, 2)
-        layout.addWidget(self.tab1.filterCaseSensitivityCheckBox, 3, 0, 1, 2)
-        layout.addWidget(self.tab1.sortCaseSensitivityCheckBox, 3, 1)
+        layout.addWidget(self.tab1.backButton, 0, 3, 1, 1)
+        layout.addWidget(self.tab1.citizenListView, 1, 0, 1, 3)
+        layout.addWidget(self.tab1.filterPatternLabel, 2, 0)
+        layout.addWidget(self.tab1.filterPatternLineEdit, 2, 1, 1, 2)
+        layout.addWidget(self.tab1.filterColumnLabel, 3, 0)
+        layout.addWidget(self.tab1.filterColumnComboBox, 3, 1, 1, 2)
+        layout.addWidget(self.tab1.filterCaseSensitivityCheckBox, 4, 0, 1, 2)
+        layout.addWidget(self.tab1.sortCaseSensitivityCheckBox, 4, 1)
+        self.layoutAll = layout
         self.tab1.setLayout(layout)
 
         
 #   defines what happens if a citizen entry is double clicked
     def doubleClicked(self,index):
 
-#   checking if in all citizen view mode
-        if(self.tab1State == 0):
+        if self.tab1State == 0:
 
 #   fetching data from the double clicked entry
             id = index.siblingAtColumn(0)
@@ -131,18 +141,21 @@ class Window(QTabWidget):
             keystrokes = index.siblingAtColumn(4)
             clicks = index.siblingAtColumn(5)
             scp = index.siblingAtColumn(6)
-            update = index.siblingAtColumn(7)
 
 #   build a characteristics page for the selected entry and set tab1State to 1 for characteristics view
-            self.charViewUI(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data(), update.data())
+            self.charViewUI(id.data(), name.data(), failings.data(), chars.data(), keystrokes.data(), clicks.data(), scp.data())
             self.tab1State = 1
+            self.tab1.backButton.show()
 
-        else:
+
+    def backToAll(self):
+
+        if self.tab1State == 1:
 
 #   return to all view mode if in characteristics view #subject to change
-            self.setTab1Model(self.citizenModel)
-            self.tab1State = 0
-#            self.admin_controller.getAllCitizenInfo(self.admin_controller.getAllCitizen(self.admin_controller.connection))
+                self.setTab1Model(self.citizenModel)
+                self.tab1State = 0
+                self.tab1.backButton.hide()
 
 
 #   building tab2's foundation
@@ -177,7 +190,7 @@ class Window(QTabWidget):
         self.tab3.setLayout(layout)
 
 #   create a one time use characteristics model and view from data passed from the view
-    def charViewUI(self, id, name, failings, chars, keystrokes, clicks, scp, update):
+    def charViewUI(self, id, name, failings, chars, keystrokes, clicks, scp):
         self.tab1.charModel = QSortFilterProxyModel()
         self.tab1.charModel.setDynamicSortFilter(True)
 
@@ -186,12 +199,7 @@ class Window(QTabWidget):
         self.tab1.charView.setModel(self.tab1.charModel)
         self.tab1.charView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        self.setTab1Model(self.createCharacteristicsModel(id, name, failings, chars, keystrokes, clicks, scp, update))
-
-        layoutc = QGridLayout()
-        layoutc.addWidget(self.tab1.charView, 0, 0, 0, 0)
-
-        self.tab1.setLayout(layoutc)
+        self.setTab1Model(self.createCharacteristicsModel(id, name, failings, chars, keystrokes, clicks, scp))
         
 
 #   methods to quickly set models in the tabs
@@ -227,19 +235,32 @@ class Window(QTabWidget):
         self.tab1.citizenListModel.setSortCaseSensitivity(caseSensitivity)
 
 #   method for adding entries in the current datamodel
-    def addEntry(self, citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, tastenanschlägeProMin, klicksProMin, socialCredit, letzteAktualisierung):
+    def addEntry(self, citizenModel, id, name, failings, written, keysperminute, clicksperminute, scs):
         citizenModel.insertRow(0)
         citizenModel.setData(citizenModel.index(0, 0), id)
         citizenModel.setData(citizenModel.index(0, 1), name)
-        citizenModel.setData(citizenModel.index(0, 2), anzahlVerstöße)
-        citizenModel.setData(citizenModel.index(0, 3), eingegebeneBuchstaben)
-        citizenModel.setData(citizenModel.index(0, 4), tastenanschlägeProMin)
-        citizenModel.setData(citizenModel.index(0, 5), klicksProMin)
-        citizenModel.setData(citizenModel.index(0, 6), socialCredit)
-        citizenModel.setData(citizenModel.index(0, 7), letzteAktualisierung)
+        citizenModel.setData(citizenModel.index(0, 2), failings)
+        citizenModel.setData(citizenModel.index(0, 3), written)
+        citizenModel.setData(citizenModel.index(0, 4), keysperminute)
+        citizenModel.setData(citizenModel.index(0, 5), clicksperminute)
+        citizenModel.setData(citizenModel.index(0, 6), scs)
+
+    def addAllCitizen(self, citizenData):
+        for citizen in citizenData:
+             id = 0 if citizen['ID'] == -1 else citizen['ID']
+             name = citizen['Name']
+             failings = citizen['Failings']
+             cntfailings = len(failings)
+             kpm = citizen['KPM']
+             cpm = citizen['CPM']
+             scs = citizen['SCS']
+             self.addEntry(self.citizenModel, id, name, failings, cntfailings, kpm, cpm, scs)
+
+
 
 #   method for building the characteristics view
-    def buildCharacteristics(self, characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp, update):
+    def buildCharacteristics(self, characteristicsModel, id, name, failings, chars, keystrokes, clicks, scp):
+
         characteristicsModel.setData(characteristicsModel.index(0, 0), "ID:")
         characteristicsModel.setData(characteristicsModel.index(1, 0), "Name:")
         characteristicsModel.setData(characteristicsModel.index(2, 0), "Verstöße:")
@@ -247,7 +268,7 @@ class Window(QTabWidget):
         characteristicsModel.setData(characteristicsModel.index(4, 0), "Tasten pro Minute:")
         characteristicsModel.setData(characteristicsModel.index(5, 0), "Klicks pro Minute:")
         characteristicsModel.setData(characteristicsModel.index(6, 0), "Social-Credit-Score:")
-        characteristicsModel.setData(characteristicsModel.index(7, 0), "zuletzt aktualisiert:")
+
         characteristicsModel.setData(characteristicsModel.index(0, 1), id)
         characteristicsModel.setData(characteristicsModel.index(1, 1), name)
         characteristicsModel.setData(characteristicsModel.index(2, 1), failings)
@@ -255,12 +276,11 @@ class Window(QTabWidget):
         characteristicsModel.setData(characteristicsModel.index(4, 1), keystrokes)
         characteristicsModel.setData(characteristicsModel.index(5, 1), clicks)
         characteristicsModel.setData(characteristicsModel.index(6, 1), scp)
-        characteristicsModel.setData(characteristicsModel.index(7, 1), update)
 
 #   method for building the citizen datamodel
     def updateCitizenModel(self):
 
-        self.citizenModel = QStandardItemModel(0, 8, self)
+        self.citizenModel = QStandardItemModel(0, 7, self)
 
         self.citizenModel.setHeaderData(0, Qt.Horizontal, "ID")
         self.citizenModel.setHeaderData(1, Qt.Horizontal, "Name")
@@ -269,20 +289,17 @@ class Window(QTabWidget):
         self.citizenModel.setHeaderData(4, Qt.Horizontal, "Tastenanschläge / min")
         self.citizenModel.setHeaderData(5, Qt.Horizontal, "Klicks / min")
         self.citizenModel.setHeaderData(6, Qt.Horizontal, "Social-Credit-Punkte")
-        self.citizenModel.setHeaderData(7, Qt.Horizontal, "letzte Aktualisierung")
-
-        self.addEntry(self.citizenModel, 1, "Bürger9", 23, ''.join(["I","v","E","J","Z"]), 89, 67, 193, QDateTime(QDate(2020, 12, 31), QTime(17, 3)))
         
         return self.citizenModel
 
 #   method for building characteristics data model  
-    def createCharacteristicsModel(self, id, name, failings, chars, keystrokes, clicks, scp, update):
-        charModel = QStandardItemModel(8,2, self)
+    def createCharacteristicsModel(self, id, name, failings, chars, keystrokes, clicks, scp):
+        charModel = QStandardItemModel(7,2, self)
 
         charModel.setHeaderData(0, Qt.Horizontal, "Übersicht")
         charModel.setHeaderData(1, Qt.Horizontal, "Daten")
 
-        self.buildCharacteristics(charModel, id, name, failings, chars, keystrokes, clicks, scp, update)
+        self.buildCharacteristics(charModel, id, name, failings, chars, keystrokes, clicks, scp)
 
         return charModel
 
