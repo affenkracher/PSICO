@@ -6,7 +6,7 @@ import sys
 import os
 from PySide6.QtCore import QDate, QDateTime, QRegularExpression, QSortFilterProxyModel, QTime, Qt
 from PySide6.QtGui import QStandardItemModel, QIcon
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow)
 
 # Constant for current working directory
 CWD = os.getcwd()
@@ -286,9 +286,29 @@ class Window(QTabWidget):
 
         return charModel
 
+
+class PasswordWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        
+        self.setWindowTitle(" ")
+        self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
+        self.resize(170, 30)
+        
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.Password)
+        self.setCentralWidget(self.password)
+        self.password.editingFinished.connect(self.validatePassword)
+
+    def validatePassword(self):
+        if self.password.text() == 'admin':
+            self.window = Window()
+            self.window.show()
+            self.close()
+            
 #   main method for running the application
 if __name__ == '__main__':
     app = QApplication()
-    window = Window()
-    window.show()
+    startWindow = PasswordWindow()
+    startWindow.show()
     sys.exit(app.exec())
