@@ -3,7 +3,6 @@ from firebase_admin import credentials
 from firebase_admin import db
 import os
 
-
 CWD = os.getcwd()
 
 class AdminWatcher():
