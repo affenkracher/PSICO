@@ -1,18 +1,24 @@
 from typing import List
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import db
+from firebase_admin import db, storage
 from firebase_admin.db import Reference
 import os
 import json
-import base64
+
+def getCWD():
+    CWD = os.getcwd()
+    if CWD.find("\\PSICO-Buerger-Software") >= 0:
+        cut = len("\\PSICO-Buerger-Software")
+        CWD = CWD[0:-cut]
+    return CWD
 
 # https://firebase.google.com/docs/admin/setup#initialize-sdk
 """
 Generate a unique connection to the firebase datastorage of PSICO, and return the reference
 """
 def queryConnect():
-    CWD = os.getcwd()
+    CWD = getCWD()
     CERTIFICATE_FILE_PATH = CWD + '\\PSICO-Buerger-Software\\res\\firebaseCertificate.json'
     CREDENTIALS = credentials.Certificate(CERTIFICATE_FILE_PATH)
     APP = firebase_admin.initialize_app(CREDENTIALS, options={
@@ -20,6 +26,17 @@ def queryConnect():
     })
     REF = db.reference("Citizen")
     return REF
+
+def storageConnect():
+    CWD = getCWD()
+    CERTIFICATE_FILE_PATH = CWD + '\\PSICO-Buerger-Software\\res\\firebaseCertificate.json'
+    CREDENTIALS = credentials.Certificate(CERTIFICATE_FILE_PATH)
+    OTHER_APP = firebase_admin.initialize_app(CREDENTIALS, options={
+        'projectId': 'psico-software',
+        'storageBucket': 'psico-software.appspot.com'
+    }, name="app2")
+    BUCKET = storage.bucket(app=OTHER_APP)
+    return BUCKET
 
 """
 Central Data Handling class. Query, Update and Insert data.
@@ -30,32 +47,39 @@ class QueryController():
     """
     def __init__(self) -> None:
         self.alive = True
+        self.storage = storageConnect()
         self.connection = queryConnect()
-        CWD = os.getcwd()
+        CWD = getCWD()
         try:
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "r") as configFile:
                 configData = json.load(configFile)
                 self.queryId = configData["id"]
                 print(self.queryId)
                 self.lastKeyLogID = configData["lastKeyLogId"]
+                self.lastImgID = configData["lastImgId"]
+                self.lastAudioID = configData["lastAudioId"]
         except:
             ID = self.insertQuery()
             dictionary = {
                 "id": ID,
-                "lastKeyLogId": 0
+                "lastKeyLogId": 0,
+                "lastImgId": 0,
+                "lastAudioId": 0,
             }
             json_object = json.dumps(dictionary, indent=2)
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "w") as configFile:
                 configFile.write(json_object)
             self.queryId = ID
             self.lastKeyLogID = 0
-            self.lastMouseLogID = 0
+            self.lastImgID = 0
+            self.lastAudioID = 0
+        self.CITIZEN_REF = self.connection.child(self.queryId)
 
     """
     Safe the instance data of the query controller inside the queryConfig.json
     """
     def onClose(self):
-        CWD = os.getcwd()
+        CWD = getCWD()
         try:
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "w") as configFile:
                 dictionary = {
@@ -71,7 +95,7 @@ class QueryController():
     Same as onClose, but only for specific key value pairs
     """
     def updateConfig(self, key, value):
-        CWD = os.getcwd()
+        CWD = getCWD()
         try:
             json_object = None
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "r") as configData:
@@ -93,10 +117,11 @@ class QueryController():
         name = os.getlogin()
         CITIZEN_REF = self.connection.push({
             'Name': name,
-            'SCS': -100,
+            'SCS': -10,
             'Productivity': 0,
             'CPM': 0,
             'WPM': 0,
+            'KPM': 0,
             'KeyLogs':
                 {
                     '-1': 'Initial'
@@ -122,6 +147,10 @@ class QueryController():
                     '-1': 'Initial'
                 },
             'KeyEvaluation':
+                {
+                    '-1': 'Initial'
+                },
+            'AudioLogs': 
                 {
                     '-1': 'Initial'
                 }
@@ -156,8 +185,7 @@ class QueryController():
     Add a list of strings to the KeyLogs field of the user. Assinges every entry an incrementing ID.
     """
     def addToKeyLogs(self, log: List[str]):
-        CITIZEN_REF = self.connection.child(self.queryId)
-        KEY_LOGS_REF = CITIZEN_REF.child("KeyLogs")
+        KEY_LOGS_REF = self.CITIZEN_REF.child("KeyLogs")
         ID = self.lastKeyLogID
         for l in log:
             print("Uploading", l)
@@ -174,18 +202,17 @@ class QueryController():
     and then add to it the new found count. Update the entry
     """
     def addToMouseLogs(self, log):
-        CITIZEN_REF = self.connection.child(self.queryId)
-        MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
+        MOUSE_LOGS_REF = self.CITIZEN_REF.child("MouseLogs")
         for k1 in log:
             dbVal = MOUSE_LOGS_REF.child(k1).get()
             if dbVal is None:
-                print("initial upload", k1)
+                print("First", log[k1])
                 MOUSE_LOGS_REF.update({
                     k1: log[k1]
                 })
             else:
-                print("erhöhe counter ")
                 newVal = int(log[k1]) + int(dbVal)
+                print("Update", log[k1])
                 MOUSE_LOGS_REF.update({
                     k1: newVal
                 })
@@ -195,24 +222,14 @@ class QueryController():
     view as png
     """
     def addToCameraLog(self, picture):
-        CWD = os.getcwd()
-        PICTURE_PATH = CWD + "\\PSICO-Buerger-Software\\modules\\camera\\storage\\test.png"
-        CITIZEN_REF = self.connection.child(self.queryId)
-        CAMERA_LOG_REF = CITIZEN_REF.child("CameraPictures")
-        data = CAMERA_LOG_REF.get()
-        dataLen = len(data)
-        ID = dataLen % 5
-        pictureToBase64 = base64.b64encode(picture).decode("ASCII")
-        CAMERA_LOG_REF.update({
-            ID: pictureToBase64
-        })
+        blob = self.storage.blob(picture)
+        blob.upload_from_filename(filename=picture, content_type="image/png")
 
     """
     Update the TaskLogs with the dictionary of (pid: taskName)
     """
     def addToTaskLog(self, log):
-        CITIZEN_REF = self.connection.child(self.queryId)
-        TASK_LOG_REF = CITIZEN_REF.child("TaskLogs")
+        TASK_LOG_REF = self.CITIZEN_REF.child("TaskLogs")
         for data in log:
             id = data['pid']
             taskName = data['name']
@@ -221,25 +238,62 @@ class QueryController():
             })
 
     def getSCS(self):
-        CITIZEN_REF = self.connection.child(self.queryId)
-        SCS = CITIZEN_REF.get()["SCS"]
+        SCS = self.CITIZEN_REF.get()["SCS"]
         return SCS
 
     def updateSCS(self, value):
-        CITIZEN_REF, SCS = self.getSCS()
+        SCS = self.getSCS()
         newSCS = SCS + value
-        CITIZEN_REF.update({
+        self.CITIZEN_REF.update({
             'SCS': newSCS
         })
         NEW_SCS = self.getSCS()
         print(NEW_SCS)
 
     def getSCSReference(self):
-        CITIZEN_REF = self.connection.child(self.queryId)
-        SCS_REF = CITIZEN_REF.child("SCS")
+        SCS_REF = self.CITIZEN_REF.child("SCS")
         return SCS_REF
 
     def getIncriminitialReference(self) -> Reference:
-        CITIZEN_REF = self.connection.child(self.queryId)
-        INCRIMINATING_REF = CITIZEN_REF.child("IncriminatingMaterial")
+        INCRIMINATING_REF = self.CITIZEN_REF.child("Failings")
         return INCRIMINATING_REF
+
+    def saveBadHabits(self, badHabit):
+        REF = self.getIncriminitialReference()
+        key = len([*REF.get()])
+        REF.update({
+            key: badHabit
+        })
+
+    def updateKeyEvaluation(self, keyEvaluation):
+        KEYEVALUATION_REF = self.CITIZEN_REF.child("KeyEvaluation")
+        for k1 in keyEvaluation:
+            dbVal = KEYEVALUATION_REF.child(k1).get()
+            if dbVal is None:
+                KEYEVALUATION_REF.update({
+                    k1: keyEvaluation[k1]
+                })
+            else:
+                newVal = int(dbVal) + int(keyEvaluation[k1])
+                KEYEVALUATION_REF.update({
+                    k1: newVal
+                })
+
+    def updateCurrentWPM(self, wpm):
+        self.CITIZEN_REF.update({
+            "WPM": wpm
+        })
+
+    def updateKPM(self, kpm): 
+        self.CITIZEN_REF.update({
+            "KPM": kpm
+        })
+
+    def updateCPM(self, cpm): 
+        self.CITIZEN_REF.update({
+            "CPM": cpm
+        })
+
+    def uploadAudio(self, audio): 
+        blob = self.storage.blob(audio)
+        blob.upload_from_filename(filename=audio, content_type="audio/wav")
