@@ -6,6 +6,7 @@ from ssl import Options
 from turtle import update
 from PSICO_Admin_Watcher import AdminWatcher
 import sys
+import os
 from PySide6.QtCore import QRegularExpression, QSortFilterProxyModel, Qt
 from PySide6.QtGui import QStandardItemModel, QIcon
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow, QPushButton)
@@ -19,9 +20,6 @@ class Window(QTabWidget):
 
         # window contains its own model data handler
         self.adminController = AdminWatcher()
-
-        # self.adminController.generateHeatmap(self.adminController.getComulatedMouseData())
-        
 
         # window gets some tabwidgets as tabs
         self.tab1 = QWidget()
@@ -50,12 +48,12 @@ class Window(QTabWidget):
         # set datamodels for the different tabs
         self.setTab1Model(self.citizenModel)
         self.setTab2Model(self.totalsModel)
-        self.setTab3Model(self.createCitizenModel())
+        # self.setTab3Model(self.createCitizenModel())
 
         # adjust window settings
         self.setWindowTitle("PSICO Admin-Software")
-        self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
-        self.resize(900, 450)
+        self.setWindowIcon(QIcon(getCWD() + '\PSICO-Admin-Software\PSICO_Logo.svg'))
+        self.setFixedSize(900, 450)
         
 
     # building tab1's foundation
@@ -116,7 +114,7 @@ class Window(QTabWidget):
         self.tab1.filterCaseSensitivityCheckBox.toggled.connect(self.filterPatternChanged)
         self.tab1.sortCaseSensitivityCheckBox.toggled.connect(self.sortCaseSensitivityChanged)
         self.tab1.citizenListView.doubleClicked.connect(self.createCitizenView)
-        self.tab1.heatmapButton.clicked.connect(self.heatmapTest)
+        self.tab1.heatmapButton.clicked.connect(self.generateCitizenMouseDataHeatmap)
 
         # default settings for the control elements
         self.tab1.citizenListView.sortByColumn(0, Qt.AscendingOrder)
@@ -139,8 +137,11 @@ class Window(QTabWidget):
         self.layoutAll = layout
         self.tab1.setLayout(layout)
     
-    def heatmapTest(self):
+    def generateCitizenMouseDataHeatmap(self):
         self.adminController.generateHeatmap(self.adminController.getCitizenMouseData(self.tab1.lastCitizenId))
+        
+    def generateComulatedMouseDataHeatmap(self):
+        self.adminController.generateHeatmap(self.adminController.getComulatedMouseData())
 
         
     # creates a detailed view of a specific citizen entry
@@ -202,6 +203,7 @@ class Window(QTabWidget):
         self.tab2.totalsView = QTreeView()
         self.tab2.totalsView.setRootIsDecorated(False)
         self.tab2.totalsView.setModel(self.tab2.totalsModel)
+        self.tab2.totalsView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         self.setTab2Model(self.totalsModel)
 
@@ -241,18 +243,23 @@ class Window(QTabWidget):
 
     # build tab3's foundation
     def tab3UI(self):
-
-        # create a datamodel
-        self.tab3.heatMapModel = QSortFilterProxyModel()
-        self.tab3.heatMapModel.setDynamicSortFilter(True)
-
-        # create a view model
-        self.tab3.heatmapView = QTreeView()
-        self.tab3.heatmapView.setRootIsDecorated(False)
-
+        
+        # button to generate the comulated mouse heatmap
+        self.tab3.mouseHeatmapButton = QPushButton()
+        self.tab3.mouseHeatmapButton.setText('Generiere eine Maus-Heatmap!')
+        self.tab3.mouseHeatmapButton.setFixedSize(200, 25)
+        self.tab3.mouseHeatmapButton.clicked.connect(self.generateComulatedMouseDataHeatmap)
+        
+        # button to generate the comulated keyboard heatmap
+        self.tab3.keyboardHeatmapButton = QPushButton()
+        self.tab3.keyboardHeatmapButton.setText('Generiere eine Tastatur-Heatmap!')
+        self.tab3.keyboardHeatmapButton.setFixedSize(200, 25)
+        self.tab3.keyboardHeatmapButton.clicked.connect(self.adminController.generateKeyboardHeatmap)
+        
         # set layout and add created widgets
         layout = QGridLayout()
-        layout.addWidget(self.tab3.heatmapView, 0, 0, 0, 0)
+        layout.addWidget(self.tab3.mouseHeatmapButton, 0, 0, 2, 0)
+        layout.addWidget(self.tab3.keyboardHeatmapButton, 1, 0, 2, 0)
         self.tab3.setLayout(layout)
 
     # create a one time use characteristics model and view from data passed from the view
@@ -274,9 +281,7 @@ class Window(QTabWidget):
 
     def setTab2Model(self, model):
         self.tab2.totalsModel.setSourceModel(model)
-
-    def setTab3Model(self, model):
-        self.tab3.heatMapModel.setSourceModel(model)
+        self.tab2.totalsView.resizeColumnToContents(0)
 
     # reaction on changes in the filter input field
     def filterPatternChanged(self):
@@ -368,6 +373,8 @@ class Window(QTabWidget):
         self.buildCharacteristics(charModel, id, name, failings, chars, keystrokes, clicks, scp)
 
         return charModel
+    
+
 
 # class for the authentication
 class PasswordWindow(QMainWindow):
@@ -375,8 +382,8 @@ class PasswordWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle(" ")
-        self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
-        self.resize(170, 30)
+        self.setWindowIcon(QIcon(getCWD() + '\\PSICO-Admin-Software\\PSICO_Logo.svg'))
+        self.setFixedSize(170, 30)
 
         self.password = QLineEdit()
         self.password.setEchoMode(QLineEdit.Password)
@@ -389,6 +396,13 @@ class PasswordWindow(QMainWindow):
             self.window = Window()
             self.window.show()
             self.close()
+            
+def getCWD():
+    CWD = os.getcwd()
+    if CWD.find("\PSICO-Admin-Software") >= 0:
+        cut = len("\PSICO-Admin-Software")
+        CWD = CWD[0:-cut]
+    return CWD
 
 # main method for running the application
 if __name__ == '__main__':
