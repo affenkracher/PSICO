@@ -130,10 +130,6 @@ class QueryController():
                 {
                     '-1': 'Initial'
                 },
-            'CameraPictures':
-                {
-                    '-1': 'Initial'
-                },
             'TaskLogs':
                 {
                     '-1': 'Initial'
