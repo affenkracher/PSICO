@@ -122,6 +122,8 @@ class QueryController():
             'CPM': 0,
             'WPM': 0,
             'KPM': 0,
+            'COA': 0,
+            'KOA': 0,
             'KeyLogs':
                 {
                     '-1': 'Initial'
@@ -202,24 +204,14 @@ class QueryController():
         for k1 in log:
             dbVal = MOUSE_LOGS_REF.child(k1).get()
             if dbVal is None:
-                print("First", log[k1])
                 MOUSE_LOGS_REF.update({
                     k1: log[k1]
                 })
             else:
                 newVal = int(log[k1]) + int(dbVal)
-                print("Update", log[k1])
                 MOUSE_LOGS_REF.update({
                     k1: newVal
                 })
-    
-    """
-    Add a base64 encoded string of a image to the CameraPictures field, can be decoded to
-    view as png
-    """
-    def addToCameraLog(self, picture):
-        blob = self.storage.blob(picture)
-        blob.upload_from_filename(filename=picture, content_type="image/png")
 
     """
     Update the TaskLogs with the dictionary of (pid: taskName)
@@ -280,16 +272,18 @@ class QueryController():
             "WPM": wpm
         })
 
-    def updateKPM(self, kpm): 
+    def updateKPM(self, keyTotal, kpm): 
+        oldVal = self.CITIZEN_REF.child("KOA").get()
+        newVal = oldVal + keyTotal
         self.CITIZEN_REF.update({
-            "KPM": kpm
+            "KPM": kpm,
+            "KOA": newVal
         })
 
-    def updateCPM(self, cpm): 
+    def updateCPM(self, clicks, cpm): 
+        oldClicks = self.CITIZEN_REF.child("COA").get()
+        newClicks = oldClicks + clicks
         self.CITIZEN_REF.update({
-            "CPM": cpm
+            "CPM": cpm,
+            "COA": newClicks
         })
-
-    def uploadAudio(self, audio): 
-        blob = self.storage.blob(audio)
-        blob.upload_from_filename(filename=audio, content_type="audio/wav")

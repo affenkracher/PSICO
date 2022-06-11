@@ -2,6 +2,9 @@
 .vscode/*
 */.vscode/*
 
+*.png
+*.wav
+
 # Firebase Credentials
 /PSICO-Buerger-Software/res/firebaseCertificate.json
 

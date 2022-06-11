@@ -74,15 +74,19 @@ class MouseLogger():
 
     def cpm(self):
         counter = 0
-        cb = lambda a : counter + 1
         startTime = time.time()
         while 1:
-            mouse.on_click(callback=cb, args=())
+            if mouse.is_pressed("LEFT") or mouse.is_pressed("RIGHT"):
+                counter = counter + 1
+            print(counter)
             endTime = time.time()
-            if ((endTime - startTime) >= 60):
+            sixtySec = endTime - startTime
+            print(sixtySec)
+            if sixtySec >= 60:
                 startTime = time.time()
-                CPM = counter / (endTime - startTime)
-                self.queryController.updateCPM(CPM)
+                CPM = counter / sixtySec
+                self.queryController.updateCPM(counter, CPM)
+                counter = 0
             yield CPM
         
     """
@@ -93,4 +97,4 @@ class MouseLogger():
         while 1:
             x , y = mouse.get_position()
             yield (x , y)
-            #time.sleep(1)
+            time.sleep(1)

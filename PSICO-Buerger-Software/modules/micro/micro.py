@@ -1,5 +1,4 @@
-from audioop import byteswap
-import io
+import uuid
 import sounddevice as sd
 from scipy.io.wavfile import write, read
 import os
@@ -19,7 +18,7 @@ class MicroLogger():
     def __init__(self, queryController):
         self.fps = 44100 #rate
         self.seconds = 5 #duration of recording
-        self.fileName = getCWD() + "\\PSICO-Buerger-Software\\modules\\micro\\storage\\recording.wav"
+        self.fileName = getCWD() + self.queryController.queryId + "_" + str(uuid.uuid1()) + "_onStartUp.wav"
         self.queryController = queryController
 
     """
@@ -31,21 +30,15 @@ class MicroLogger():
             recording = sd.rec(int(self.seconds*self.fps), samplerate=self.fps, channels=2) #record
             sd.wait() #wait till recording complete
             print('recording finished')
-            write("test.wav", self.fps, recording) #save to WAV file
+            write(self.fileName, self.fps, recording) #save to WAV file
+            self.uploadAudio(self.queryController.storage, self.fileName)
         except:
             print('No micro detected')
 
-    def uploadAudio(self):
-        with open(self.fileName, "rb") as wavFile:
-            input_wav = wavFile.read()
-        rate, data = read(io.BytesIO(input_wav))
-        reversed_data = data[::-1]
-        bytes_wav = bytes()
-        byte_io = io.BytesIO(bytes_wav)
-        write(byte_io, rate, reversed_data)
-        output_wav = byte_io.read()
-        self.queryController.uploadAudio(output_wav)
-
+    def uploadAudio(self, storage, audio): 
+        blob = storage.blob("Audio/" + audio)
+        blob.upload_from_filename(filename=audio, content_type="audio/wav")
+        blob.make_public()
 
     def main(self):
         self.record()

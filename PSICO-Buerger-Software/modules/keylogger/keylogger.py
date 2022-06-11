@@ -201,7 +201,8 @@ class KeyLogger():
             writtenStrings = keyboard.get_typed_strings(keyEvents, allow_backspace=False)
             endTime = time.time()
             KPM = len(keyEventsAll)/(endTime-startTime)
-            self.queryController.updateKPM(KPM)
+            self.queryController.updateKPM(len(keyEventsAll), KPM)
+            self.queryController.saveBadHabits(f'Citizen wasnt productive. KPM of: {KPM}')
             for string in writtenStrings:
                 if contains(string, "konami"):
                     print("Exiting Keylogger")
@@ -219,7 +220,7 @@ class KeyLogger():
         keyEvents = []
         keyEventsAll = []
         checkTime = time.time()
-        while time.time()-checkTime < 5:
+        while time.time()-checkTime < 60:
             keyEvent = keyboard.read_event()
             keyEventsAll.append(keyEvent)
             checkTime = time.time()

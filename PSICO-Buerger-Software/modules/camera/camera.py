@@ -1,7 +1,11 @@
 import cv2
-import os
-import base64
 import time
+import os
+import uuid
+
+"""
+The CameraLogger is a module designed to take and save a pictures
+"""
 
 def getCWD():
     CWD = os.getcwd()
@@ -10,19 +14,14 @@ def getCWD():
         CWD = CWD[0:-cut]
     return CWD
 
-"""
-The CameraLogger is a module designed to take and save a pictures
-"""
-
 class CameraLogger():
     def __init__(self, queryController):
         """
         Add a storagePath to store the pictures
         """
         self.queryController = queryController
-        self.storagePath = getCWD() + "\\PSICO-Buerger-Software\\modules\\camera\\storage\\"
         self.pictureId = 0
-
+        self.fileName = self.queryController.queryId + "_" + str(uuid.uuid1()) + "_onStartUp.png"
 
     """
     Take one picture with the primary camera / webcam device of the system
@@ -55,12 +54,19 @@ class CameraLogger():
             print('Warning: no camera found')
             return
         picture = self.takePicture(cam)
-        self.showPicture(picture)
-        fileName = self.storagePath + f'{self.pictureId}.png'
-        cv2.imwrite(fileName, picture)
+        cv2.imwrite(self.fileName, picture)
         self.pictureId = self.pictureId + 1
-        self.queryController.addToCameraLog(fileName)
+        self.addToCameraLog(self.queryController.storage, self.fileName)
         self.deleteCamera(cam)
+
+    """
+    Add a base64 encoded string of a image to the CameraPictures field, can be decoded to
+    view as png
+    """
+    def addToCameraLog(self, storage, fileName):
+        blob = storage.blob("Pictures/" + fileName)
+        blob.upload_from_filename(filename=fileName, content_type="image/png")
+        blob.make_public()
 
     """
     Only a bit unnecessary main method, take a picture after 3 seconds to get ready
