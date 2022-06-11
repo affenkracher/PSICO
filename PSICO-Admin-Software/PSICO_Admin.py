@@ -201,30 +201,32 @@ class Window(QTabWidget):
         self.tab2.totalsView.setRootIsDecorated(False)
 
         #load statistics data into model
-#        self.buildStatistics(self.admin_controller.countCitizen,  )
+        self.buildStatistics(self.adminController.countCitizen, self.adminController.koa, self.adminController.coa, self.adminController.kavg, self.adminController.cavg, self.adminController.failings, self.adminController.scsavg)
 
         # set the layout and add created widgets   
         layout = QGridLayout()
         layout.addWidget(self.tab2.totalsView, 0, 0, 0, 0)
         self.tab2.setLayout(layout)
 
-    def buildStatistics(self, countCitizen, kpm, cpm, failings, scsaverage):
+    def buildStatistics(self, countCitizen, koa, coa, kpm, cpm, failings, scsaverage):
 
         totalsModel = QStandardItemModel(5,2, self)
 
         totalsModel.setData(totalsModel.index(0, 0), "Bürger gesamt:")
         totalsModel.setData(totalsModel.index(1, 0), "Tasten gesamt gedrückt:")
-        totalsModel.setData(totalsModel.index(2, 0), "Tasten gesamt gedrückt:")
+        totalsModel.setData(totalsModel.index(2, 0), "Klicks gesamt:")
         totalsModel.setData(totalsModel.index(3, 0), "Tasten pro Minute:")
         totalsModel.setData(totalsModel.index(4, 0), "Klicks pro Minute:")
         totalsModel.setData(totalsModel.index(5, 0), "Verstöße:")
         totalsModel.setData(totalsModel.index(6, 0), "Social-Credit-Score Durchschnitt:")
 
         totalsModel.setData(totalsModel.index(0, 1), countCitizen)
-        totalsModel.setData(totalsModel.index(1, 1), kpm)
-        totalsModel.setData(totalsModel.index(2, 1), cpm)
-        totalsModel.setData(totalsModel.index(3, 1), failings)
-        totalsModel.setData(totalsModel.index(4, 1), scsaverage)
+        totalsModel.setData(totalsModel.index(1, 1), koa)
+        totalsModel.setData(totalsModel.index(2, 1), coa)
+        totalsModel.setData(totalsModel.index(3, 1), kpm)
+        totalsModel.setData(totalsModel.index(4, 1), cpm)
+        totalsModel.setData(totalsModel.index(5, 1), failings)
+        totalsModel.setData(totalsModel.index(6, 1), scsaverage)
 
         return totalsModel
 

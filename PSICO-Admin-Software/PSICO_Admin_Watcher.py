@@ -26,7 +26,9 @@ class AdminWatcher():
         self.coa = 0
         self.kavg = 0
         self.cavg = 0
+        self.scsall = 0
         self.scsavg = 0
+        self.failings = 0
 
     def query(self):
         query = []
@@ -55,7 +57,11 @@ class AdminWatcher():
                 self.coa + q['COA']
                 self.kavg + q['KAVG']
                 self.cavg + q['CAVG']
-                self.scsavg + q['SCS']
+                self.scsall + q['SCS']
+                self.failings + len(q['Failings'])
+        
+        self.scsavg = self.scsall / self.countCitizen
+
         return citizenList
 
     def updateCitizenData(self):
