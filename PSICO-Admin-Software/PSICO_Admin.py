@@ -4,6 +4,8 @@ from multiprocessing import connection
 from re import X
 from ssl import Options
 from turtle import update
+
+from numpy import char
 from PSICO_Admin_Watcher import AdminWatcher
 import sys
 from PySide6.QtCore import QRegularExpression, QSortFilterProxyModel, Qt
@@ -21,7 +23,6 @@ class Window(QTabWidget):
         self.adminController = AdminWatcher()
 
         # self.adminController.generateHeatmap(self.adminController.getComulatedMouseData())
-        
 
         # window gets some tabwidgets as tabs
         self.tab1 = QWidget()
@@ -137,6 +138,7 @@ class Window(QTabWidget):
         layout.addWidget(self.tab1.sortCaseSensitivityCheckBox, 4, 1)
         self.layoutAll = layout
         self.tab1.setLayout(layout)
+
     
     def heatmapTest(self):
         self.adminController.generateHeatmap(self.adminController.getCitizenMouseData(self.tab1.lastCitizenId))
@@ -151,9 +153,10 @@ class Window(QTabWidget):
             id = index.siblingAtColumn(0)
             name = index.siblingAtColumn(1)
             failings = index.siblingAtColumn(2)
-            keystrokes = index.siblingAtColumn(3)
-            clicks = index.siblingAtColumn(4)
-            scp = index.siblingAtColumn(5)
+            cntFailings = index.siblingAtColumn(3)
+            keystrokes = index.siblingAtColumn(4)
+            clicks = index.siblingAtColumn(5)
+            scp = index.siblingAtColumn(6)
             
             self.tab1.lastCitizenId = id.data()
 
@@ -170,7 +173,7 @@ class Window(QTabWidget):
             self.tab1.backButton.show()
             self.tab1.heatmapButton.show()
             
-            self.charViewUI(id.data(), name.data(), failings.data(), keystrokes.data(), clicks.data(), scp.data())
+            self.charViewUI(id.data(), name.data(), failings.data(), cntFailings.data(), keystrokes.data(), clicks.data(), scp.data())
             
 
     # return to all view mode if in characteristics view #subject to change
@@ -189,6 +192,7 @@ class Window(QTabWidget):
             self.tab1.filterColumnLabel.show()
             self.tab1.filterPatternLabel.show()
 
+
     # building tab2's foundation
     def tab2UI(self):
 
@@ -203,12 +207,11 @@ class Window(QTabWidget):
 
         self.setTab2Model(self.totalsModel)
 
-
-#        self.setTab2Model(self.tab2.totalsModel)
         # set the layout and add created widgets   
         layout = QGridLayout()
         layout.addWidget(self.tab2.totalsView, 0, 0, 0, 0)
         self.tab2.setLayout(layout)
+
 
     def buildTotals(self, countCitizen, koa, coa, kpm, cpm, failings, failingsavg, scsaverage):
 
@@ -237,6 +240,7 @@ class Window(QTabWidget):
 
         return totalsModel
 
+
     # build tab3's foundation
     def tab3UI(self):
 
@@ -253,8 +257,9 @@ class Window(QTabWidget):
         layout.addWidget(self.tab3.heatmapView, 0, 0, 0, 0)
         self.tab3.setLayout(layout)
 
+
     # create a one time use characteristics model and view from data passed from the view
-    def charViewUI(self, id, name, failings, keystrokes, clicks, scp):
+    def charViewUI(self, id, name, failings, cntFailings, keystrokes, clicks, scp):
         self.tab1.charModel = QSortFilterProxyModel()
         self.tab1.charModel.setDynamicSortFilter(True)
 
@@ -263,18 +268,22 @@ class Window(QTabWidget):
         self.tab1.charView.setModel(self.tab1.charModel)
         self.tab1.charView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        self.setTab1Model(self.createCharacteristicsModel(id, name, failings, keystrokes, clicks, scp))
+        self.setTab1Model(self.createCharacteristicsModel(id, name, failings, cntFailings, keystrokes, clicks, scp))
+
 
     # methods to quickly set models in the tabs
     def setTab1Model(self, model):
         self.tab1.citizenListModel.setSourceModel(model)
         self.tab1.citizenListView.resizeColumnToContents(0)
 
+
     def setTab2Model(self, model):
         self.tab2.totalsModel.setSourceModel(model)
 
+
     def setTab3Model(self, model):
         self.tab3.heatMapModel.setSourceModel(model)
+
 
     # reaction on changes in the filter input field
     def filterPatternChanged(self):
@@ -286,9 +295,11 @@ class Window(QTabWidget):
             reg_exp.setPatternOptions(options)
         self.tab1.citizenListModel.setFilterRegularExpression(reg_exp)
 
+
     # reaction on the filter column dropdown menu
     def filterColumnChanged(self):
         self.tab1.citizenListModel.setFilterKeyColumn(self.tab1.filterColumnComboBox.currentIndex())
+
 
     # reaction on the case sensitivity checkboxes
     def sortCaseSensitivityChanged(self):
@@ -298,15 +309,18 @@ class Window(QTabWidget):
             caseSensitivity = Qt.CaseInsensitive
         self.tab1.citizenListModel.setSortCaseSensitivity(caseSensitivity)
 
+
     # method for adding entries in the current datamodel
-    def addEntry(self, citizenModel, id, name, failings, keysPerMinute, clicksPerMinute, scs):
+    def addEntry(self, citizenModel, id, name, failings, cntFailings, keysPerMinute, clicksPerMinute, scs):
         citizenModel.insertRow(0)
         citizenModel.setData(citizenModel.index(0, 0), id)
         citizenModel.setData(citizenModel.index(0, 1), name)
         citizenModel.setData(citizenModel.index(0, 2), failings)
-        citizenModel.setData(citizenModel.index(0, 3), keysPerMinute)
-        citizenModel.setData(citizenModel.index(0, 4), clicksPerMinute)
-        citizenModel.setData(citizenModel.index(0, 5), scs)
+        citizenModel.setData(citizenModel.index(0, 3), cntFailings)
+        citizenModel.setData(citizenModel.index(0, 4), keysPerMinute)
+        citizenModel.setData(citizenModel.index(0, 5), clicksPerMinute)
+        citizenModel.setData(citizenModel.index(0, 6), scs)
+
 
     # method for adding a list of entries in the current datamodel
     def addEntryList(self, citizenData):
@@ -315,25 +329,27 @@ class Window(QTabWidget):
              if len(self.citizenModel.findItems(id)) < 1:
                 name = citizen['Name']
                 cntFailings = len([*citizen['Failings']])
+                failings = citizen['Failings']
                 kpm = citizen['KPM']
                 cpm = citizen['CPM']
                 scs = citizen['SCS']
-                self.addEntry(self.citizenModel, id, name, cntFailings, kpm, cpm, scs)
+                self.addEntry(self.citizenModel, id, name, failings, cntFailings, kpm, cpm, scs)
+
 
     # method for building the characteristics view
-    def buildCharacteristics(self, characteristicsModel, id, name, failings, keystrokes, clicks, scp):
+    def buildCharacteristics(self, characteristicsModel, id, name, failings, cntFailings, keystrokes, clicks, scp):
 
         execution = "Möglich"
 
-        if(failings > 20):
+        if(cntFailings > 20):
             execution = "Empfohlen"
-            if(failings > 100):
+            if(cntFailings > 100):
                 execution = "Exekution erforderlich"
-                if(failings > 200):
+                if(cntFailings > 200):
                     execution + " mitsamt Familie"
-                    if(failings > 300):
+                    if(cntFailings > 300):
                         execution + " und Freunden"
-                        if(failings > 500):
+                        if(cntFailings > 500):
                             execution + "...und den Hund am besten auchnoch, zur Sicherheit"
 
         characteristicsModel.setData(characteristicsModel.index(0, 0), "1.ID:")
@@ -343,14 +359,23 @@ class Window(QTabWidget):
         characteristicsModel.setData(characteristicsModel.index(4, 0), "5.Klicks pro Minute:")
         characteristicsModel.setData(characteristicsModel.index(5, 0), "6.Social-Credit-Score:")
         characteristicsModel.setData(characteristicsModel.index(6, 0), "7.Exekution:")
+        characteristicsModel.setData(characteristicsModel.index(7, 0), "8.Liste der Verbrechen:")
 
         characteristicsModel.setData(characteristicsModel.index(0, 1), id)
         characteristicsModel.setData(characteristicsModel.index(1, 1), name)
-        characteristicsModel.setData(characteristicsModel.index(2, 1), failings)
+        characteristicsModel.setData(characteristicsModel.index(2, 1), cntFailings)
         characteristicsModel.setData(characteristicsModel.index(3, 1), keystrokes)
         characteristicsModel.setData(characteristicsModel.index(4, 1), clicks)
         characteristicsModel.setData(characteristicsModel.index(5, 1), scp)
         characteristicsModel.setData(characteristicsModel.index(6, 1), execution)
+        characteristicsModel.setData(characteristicsModel.index(7, 1), "")
+
+        for key, crime in failings.items():
+            if(crime != -1 and key != "Initial"):
+                characteristicsModel.insertRow(0)
+                characteristicsModel.setData(characteristicsModel.index(0, 1), key)
+                characteristicsModel.setData(characteristicsModel.index(0, 0), crime)
+
 
     # method for building the citizen datamodel
     def createCitizenModel(self):
@@ -366,16 +391,18 @@ class Window(QTabWidget):
 
         return self.citizenModel
 
+
     # method for building characteristics data model  
-    def createCharacteristicsModel(self, id, name, failings, keystrokes, clicks, scp):
-        charModel = QStandardItemModel(7,2, self)
+    def createCharacteristicsModel(self, id, name, failings, cntFailings, keystrokes, clicks, scp):
+        charModel = QStandardItemModel(8,2, self)
 
         charModel.setHeaderData(0, Qt.Horizontal, "Übersicht")
         charModel.setHeaderData(1, Qt.Horizontal, "Daten")
 
-        self.buildCharacteristics(charModel, id, name, failings, keystrokes, clicks, scp)
+        self.buildCharacteristics(charModel, id, name, failings, cntFailings, keystrokes, clicks, scp)
 
         return charModel
+
 
 # class for the authentication
 class PasswordWindow(QMainWindow):
@@ -391,12 +418,14 @@ class PasswordWindow(QMainWindow):
         self.setCentralWidget(self.password)
         self.password.editingFinished.connect(self.validatePassword)
 
+
     # method to validate the passwort entry and to start the main program
     def validatePassword(self):
         if self.password.text() == 'admin':
             self.window = Window()
             self.window.show()
             self.close()
+
 
 # main method for running the application
 if __name__ == '__main__':
