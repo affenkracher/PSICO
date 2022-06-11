@@ -213,17 +213,20 @@ class Window(QTabWidget):
         totalsModel = QStandardItemModel(5,2, self)
 
         totalsModel.setData(totalsModel.index(0, 0), "Bürger gesamt:")
-        totalsModel.setData(totalsModel.index(1, 0), "Tasten pro Minute")
-        totalsModel.setData(totalsModel.index(2, 0), "Klicks pro Minute")
-        totalsModel.setData(totalsModel.index(3, 0), "Verstöße:")
-        totalsModel.setData(totalsModel.index(4, 0), "Social-Credit-Score Durchschnitt:")
+        totalsModel.setData(totalsModel.index(1, 0), "Tasten gesamt gedrückt:")
+        totalsModel.setData(totalsModel.index(2, 0), "Tasten gesamt gedrückt:")
+        totalsModel.setData(totalsModel.index(3, 0), "Tasten pro Minute:")
+        totalsModel.setData(totalsModel.index(4, 0), "Klicks pro Minute:")
+        totalsModel.setData(totalsModel.index(5, 0), "Verstöße:")
+        totalsModel.setData(totalsModel.index(6, 0), "Social-Credit-Score Durchschnitt:")
 
         totalsModel.setData(totalsModel.index(0, 1), countCitizen)
         totalsModel.setData(totalsModel.index(1, 1), kpm)
         totalsModel.setData(totalsModel.index(2, 1), cpm)
         totalsModel.setData(totalsModel.index(3, 1), failings)
         totalsModel.setData(totalsModel.index(4, 1), scsaverage)
-        return None
+
+        return totalsModel
 
 
     # build tab3's foundation
