@@ -19,13 +19,18 @@ class AdminWatcher():
         return ref
 
     def __init__(self) -> None:
-        self.connection = self.queryConnect()
-        self.allCitizenData = self.getAllCitizenInfo()
         self.countCitizen = 0
         self.koa = 0
         self.coa = 0
         self.kavg = 0
-        self.cavg = 0 
+        self.cavg = 0
+        self.scsall = 0
+        self.scsavg = 0
+        self.failings = 0
+        self.failingsavg = 0
+        self.connection = self.queryConnect()
+        self.allCitizenData = []
+        self.allCitizenData = self.getAllCitizenInfo()
 
     def query(self):
         query = []
@@ -47,13 +52,20 @@ class AdminWatcher():
         citizenList = []
         for i,q in self.query():
             if(isinstance(q, dict)):
-                info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
-                citizenList.append(info)
-                self.countCitizen + 1
-                self.koa + q['KOA']
-                self.coa + q['COA']
-                self.kavg + q['KAVG']
-                self.cavg + q['CAVG']
+                if(i != 'Citizen1'):
+                    info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
+                    citizenList.append(info)
+                    self.countCitizen += 1
+                    self.koa += q['KOA']
+                    self.coa += q['COA']
+                    self.scsall += q['SCS']
+                    self.failings += len(q['Failings'])
+                
+        self.kavg = self.koa / self.countCitizen
+        self.cavg = self.coa / self.countCitizen
+        self.failingsavg = self.failings / self.countCitizen
+        self.scsavg = self.scsall / self.countCitizen
+
         return citizenList
 
     def updateCitizenData(self):

@@ -33,7 +33,9 @@ class Window(QTabWidget):
 
         # initially setting the database model to view all citizen
         self.citizenModel = self.createCitizenModel()
-        self.addEntryList(self.adminController.getAllCitizenInfo())
+        self.addEntryList(self.adminController.allCitizenData)
+
+        self.totalsModel = self.buildTotals(self.adminController.countCitizen, self.adminController.koa, self.adminController.coa, self.adminController.kavg, self.adminController.cavg, self.adminController.failings, self.adminController.failings, self.adminController.scsavg)
 
         # add tabs to the window
         self.addTab(self.tab1,"Bürgeranalyse")
@@ -47,7 +49,7 @@ class Window(QTabWidget):
 
         # set datamodels for the different tabs
         self.setTab1Model(self.citizenModel)
-        self.setTab2Model(self.createCitizenModel())
+        self.setTab2Model(self.totalsModel)
         self.setTab3Model(self.createCitizenModel())
 
         # adjust window settings
@@ -113,7 +115,7 @@ class Window(QTabWidget):
         self.tab1.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
         self.tab1.filterCaseSensitivityCheckBox.toggled.connect(self.filterPatternChanged)
         self.tab1.sortCaseSensitivityCheckBox.toggled.connect(self.sortCaseSensitivityChanged)
-        self.tab1.citizenListView.doubleClicked.connect(self.createSpecificCitizenView)
+        self.tab1.citizenListView.doubleClicked.connect(self.createCitizenView)
         self.tab1.heatmapButton.clicked.connect(self.heatmapTest)
 
         # default settings for the control elements
@@ -142,7 +144,7 @@ class Window(QTabWidget):
 
         
     # creates a detailed view of a specific citizen entry
-    def createSpecificCitizenView(self, index):
+    def createCitizenView(self, index):
 
         if self.tab1State == 0:
 
@@ -199,32 +201,43 @@ class Window(QTabWidget):
         # create a view model
         self.tab2.totalsView = QTreeView()
         self.tab2.totalsView.setRootIsDecorated(False)
+        self.tab2.totalsView.setModel(self.tab2.totalsModel)
 
-        #load statistics data into model
-#        self.buildStatistics(self.admin_controller.countCitizen,  )
+        self.setTab2Model(self.totalsModel)
 
+
+#        self.setTab2Model(self.tab2.totalsModel)
         # set the layout and add created widgets   
         layout = QGridLayout()
         layout.addWidget(self.tab2.totalsView, 0, 0, 0, 0)
         self.tab2.setLayout(layout)
 
-    def buildStatistics(self, countCitizen, kpm, cpm, failings, scsaverage):
+    def buildTotals(self, countCitizen, koa, coa, kpm, cpm, failings, failingsavg, scsaverage):
 
-        totalsModel = QStandardItemModel(5,2, self)
+        totalsModel = QStandardItemModel(8,2, self)
+
+        totalsModel.setHeaderData(0, Qt.Horizontal, "Beschreibung")
+        totalsModel.setHeaderData(1, Qt.Horizontal, "Daten")
 
         totalsModel.setData(totalsModel.index(0, 0), "Bürger gesamt:")
-        totalsModel.setData(totalsModel.index(1, 0), "Tasten pro Minute")
-        totalsModel.setData(totalsModel.index(2, 0), "Klicks pro Minute")
-        totalsModel.setData(totalsModel.index(3, 0), "Verstöße:")
-        totalsModel.setData(totalsModel.index(4, 0), "Social-Credit-Score Durchschnitt:")
+        totalsModel.setData(totalsModel.index(1, 0), "Tasten gesamt gedrückt:")
+        totalsModel.setData(totalsModel.index(2, 0), "Klicks gesamt:")
+        totalsModel.setData(totalsModel.index(3, 0), "Tasten pro Minute:")
+        totalsModel.setData(totalsModel.index(4, 0), "Klicks pro Minute:")
+        totalsModel.setData(totalsModel.index(5, 0), "Verstöße:")
+        totalsModel.setData(totalsModel.index(6, 0), "Verstöße pro Kopf:")
+        totalsModel.setData(totalsModel.index(7, 0), "Social-Credit-Score Durchschnitt:")
 
         totalsModel.setData(totalsModel.index(0, 1), countCitizen)
-        totalsModel.setData(totalsModel.index(1, 1), kpm)
-        totalsModel.setData(totalsModel.index(2, 1), cpm)
-        totalsModel.setData(totalsModel.index(3, 1), failings)
-        totalsModel.setData(totalsModel.index(4, 1), scsaverage)
-        return None
+        totalsModel.setData(totalsModel.index(1, 1), koa)
+        totalsModel.setData(totalsModel.index(2, 1), coa)
+        totalsModel.setData(totalsModel.index(3, 1), kpm)
+        totalsModel.setData(totalsModel.index(4, 1), cpm)
+        totalsModel.setData(totalsModel.index(5, 1), failings)
+        totalsModel.setData(totalsModel.index(6, 1), failingsavg)
+        totalsModel.setData(totalsModel.index(7, 1), scsaverage)
 
+        return totalsModel
 
     # build tab3's foundation
     def tab3UI(self):
