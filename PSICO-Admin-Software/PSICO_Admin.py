@@ -323,6 +323,8 @@ class Window(QTabWidget):
     # method for building the characteristics view
     def buildCharacteristics(self, characteristicsModel, id, name, failings, keystrokes, clicks, scp):
 
+        execution = "Möglich"
+
         if(failings > 20):
             execution = "Empfohlen"
             if(failings > 100):
@@ -334,13 +336,13 @@ class Window(QTabWidget):
                         if(failings > 500):
                             execution + "...und den Hund am besten auchnoch, zur Sicherheit"
 
-        characteristicsModel.setData(characteristicsModel.index(0, 0), "ID:")
-        characteristicsModel.setData(characteristicsModel.index(1, 0), "Name:")
-        characteristicsModel.setData(characteristicsModel.index(2, 0), "Verbrechen:")
-        characteristicsModel.setData(characteristicsModel.index(3, 0), "Tasten pro Minute:")
-        characteristicsModel.setData(characteristicsModel.index(4, 0), "Klicks pro Minute:")
-        characteristicsModel.setData(characteristicsModel.index(5, 0), "Social-Credit-Score:")
-        characteristicsModel.setData(characteristicsModel.index(6, 0), "Exekution:")
+        characteristicsModel.setData(characteristicsModel.index(0, 0), "1.ID:")
+        characteristicsModel.setData(characteristicsModel.index(1, 0), "2.Name:")
+        characteristicsModel.setData(characteristicsModel.index(2, 0), "3.Verbrechen:")
+        characteristicsModel.setData(characteristicsModel.index(3, 0), "4.Tasten pro Minute:")
+        characteristicsModel.setData(characteristicsModel.index(4, 0), "5.Klicks pro Minute:")
+        characteristicsModel.setData(characteristicsModel.index(5, 0), "6.Social-Credit-Score:")
+        characteristicsModel.setData(characteristicsModel.index(6, 0), "7.Exekution:")
 
         characteristicsModel.setData(characteristicsModel.index(0, 1), id)
         characteristicsModel.setData(characteristicsModel.index(1, 1), name)
