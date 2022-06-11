@@ -52,28 +52,38 @@ class MouseLogger():
     """
     def main(self):
         recorder = self.recordMouseEvents()
-        counter = 500
+        counter = 50
         for rec in recorder:
             x, y = rec
-            x1 = translate(x, 0, self.screenWidth, 0, 1920 )
-            y1 = translate(y, 0, self.screenHeight, 0, 1080)
+            x1 = translate(x, 0, self.screenWidth, 0, 1280 )
+            y1 = translate(y, 0, self.screenHeight, 0, 720)
+            if x1 > 1280:
+                continue
+            if y1 > 720:
+                continue
             key = f'({x1},{y1})'
             if rec not in self.log:
-                self.log[key] = 1
+                self.log[key] = 100
             elif rec in self.log:
-                self.log[key] = self.log[key] + 1
+                self.log[key] = self.log[key] + 100
             counter = counter + 1
             if counter >= 100:
                 self.queryController.addToMouseLogs(self.log)
                 self.log = {}
                 counter = 0
 
-    def clickCounter(self):
+    def cpm(self):
         counter = 0
-        increment = lambda: counter + 1
-        while 1: 
-            mouse.on_click(counter, ())
-        return counter
+        cb = lambda a : counter + 1
+        startTime = time.time()
+        while 1:
+            mouse.on_click(callback=cb, args=())
+            endTime = time.time()
+            if ((endTime - startTime) >= 60):
+                startTime = time.time()
+                CPM = counter / (endTime - startTime)
+                self.queryController.updateCPM(CPM)
+            yield CPM
         
     """
     Return the position of the mouse every 2 sec, toa reduce the amount of data, otherwise a multiple of 10000
@@ -83,4 +93,4 @@ class MouseLogger():
         while 1:
             x , y = mouse.get_position()
             yield (x , y)
-            time.sleep(2)
+            #time.sleep(1)

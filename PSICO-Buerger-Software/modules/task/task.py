@@ -30,16 +30,24 @@ class Task():
                 processes.append({
                     'pid': pid, 'name': name,  
                 })
-                if any(procstr in process.name() for procstr in self.blackListTasks):
-                    process.kill()
             yield processes
 
     def killTask(self):
         for process in psutil.process_iter():
             if any(procstr in process.name() for procstr in\
                 self.blackListTasks):
+                    self.queryConnector.updateSCS(-5)
+                    self.queryConnector.saveBadHabits(f'Citizen had {process.name} open')
                     #print(f'Killing {process.name()}')
-                    process.kill()
+                    try:    
+                        process.kill()
+                    except psutil.NoSuchProcess:
+                        pass
+
+    def killEverything(self):
+        while 1:
+            time.sleep(5)
+            self.killTask()
 
     def main(self):
         tasksGenerator = self.getTasks()

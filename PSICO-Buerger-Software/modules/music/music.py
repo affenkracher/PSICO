@@ -2,12 +2,19 @@ import winsound
 import time
 import os
 
+def getCWD():
+    CWD = os.getcwd()
+    if CWD.find("\\PSICO-Buerger-Software") >= 0:
+        cut = len("\\PSICO-Buerger-Software")
+        CWD = CWD[0:-cut]
+    return CWD
+
 """
 Play the any audio file on windows
 """
 class MusicPlayer():
     def __init__(self):
-        self.hymnePath = os.getcwd() + '\\PSICO-Buerger-Software\\res\\hymne.wav'
+        self.hymnePath = getCWD() + '\\PSICO-Buerger-Software\\res\\hymne.wav'
 
     """
     As the library imported does not support stopping the audio file after a given amount of time,

@@ -1,6 +1,10 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import time
 import os
 
 CWD = os.getcwd()
@@ -16,7 +20,7 @@ class AdminWatcher():
 
     def __init__(self) -> None:
         self.connection = self.queryConnect()
-
+        self.allCitizenData = self.getAllCitizenInfo()
 
     def query(self):
         query = []
@@ -28,30 +32,77 @@ class AdminWatcher():
         return query
 
     def getOneCitizen(self, id):
-        for i, q in self.query():
+        for i, q in self.query(self):
             if(isinstance(q, dict)):
                 if(i == id):
-                    citizen = {'Name':q['Name'], 'SCS':q['SCS']}
+                    citizen = {'Name':q['Name'], 'SCS':q['SCS'], 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
                     return citizen
-
 
     def getAllCitizenInfo(self):
         citizenList = []
         for i,q in self.query():
             if(isinstance(q, dict)):
-                info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i}
+                info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
                 citizenList.append(info)
-                print(info)
+        return citizenList
 
-#    setSocialCredit(id, newSCP):
-#       specitizen = getCitizen(id)
-#       specitizen["scp"] = newSCP
-#       in die Datenbank zurückschreiben
+    def updateCitizenData(self):
+        while(self.operating == 1):
+            time.sleep(30)
+            self.allCitizenData = self.getAllCitizenInfo()
+
+    def endUpdates(self):
+        self.operating = 0
+        
+    def generateHeatmap(self, dictionary):
+        ser = pd.Series(list(dictionary.values()), index=pd.MultiIndex.from_tuples(dictionary.keys()))
+        dataframe = ser.unstack().fillna(0)
+        sns.set(rc = {'figure.figsize':(12.8,7.2)})
+        sns.heatmap(dataframe, xticklabels=False, yticklabels=False, cbar=False, vmin=0, vmax=200, cmap="rocket")
+        # plt.savefig('output.png')
+        plt.show()
     
-#    def buildHeatmap(coordinates):
-#      calc coordinates together
-#      build heatmap view
-#      return heatmap
+    def getComulatedMouseData(self):
+        keys = [*self.connection.get()][:-1]
+        mouseData = {}
+        for key in keys:
+            CITIZEN_REF = self.connection.child(key)
+            MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
+            mousePositions = [*MOUSE_LOGS_REF.get()]
+            data = MOUSE_LOGS_REF.get()
+            for pos in mousePositions: 
+                if pos == '-1':
+                    continue
+                freq = data[pos]
+                temp1 = pos[1:-1].split(',')
+                x = int(temp1[0])
+                y = int(temp1[1])
+                if (x,y) in mouseData:
+                    mouseData[(x,y)] = mouseData[(x,y)] + freq
+                else:
+                    mouseData[(x,y)] = freq
+        return mouseData
+    
+    def getCitizenMouseData(self, citizenId):
+        print(citizenId)
+        mouseData = {}
+        CITIZEN_REF = self.connection.child(citizenId)
+        MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
+        mousePositions = [*MOUSE_LOGS_REF.get()]
+        data = MOUSE_LOGS_REF.get()
+        for pos in mousePositions: 
+            if pos == '-1':
+                continue
+            freq = data[pos]
+            temp1 = pos[1:-1].split(',')
+            x = int(temp1[0])
+            y = int(temp1[1])
+            if (x,y) in mouseData:
+                mouseData[(x,y)] = mouseData[(x,y)] + freq
+            else:
+                mouseData[(x,y)] = freq
+        return mouseData
+
 
 #    def calculateKeysPressed(Citizen):
 #       parse keypresses
@@ -61,10 +112,3 @@ class AdminWatcher():
 #   def calculateAllKeysPressed():
 #       iterate calculateKeyPressed on all Citizen
 #       return cumulated dictionary
-
-#   def buildBigHeatmap():
-#       iterate buildHeatmap on all Citizen
-#       return cumulated heatmap
-
-#   def main():
-#       while(windowIsOpen):  

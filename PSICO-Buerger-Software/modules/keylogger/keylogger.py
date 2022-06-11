@@ -121,6 +121,8 @@ class KeyLogger():
         print(joinedLines)
         for badWord in self.unwantedStrings:
             if joinedLines.find(badWord) >= 0:
+                self.queryController.updateSCS(-5)
+                self.queryController.saveBadHabits(f'Citizen wrote: {joinedLines}')
                 for _ in range(0, len(joinedLines)):
                     keyboard.press_and_release("backspace")
 
@@ -195,9 +197,11 @@ class KeyLogger():
             startTime = time.time()
             lines = []
             lines.clear()
-            keyEvents = self.readFirstNKeyEvents()
+            keyEvents, keyEventsAll = self.readFirstNKeyEvents()
             writtenStrings = keyboard.get_typed_strings(keyEvents, allow_backspace=False)
             endTime = time.time()
+            KPM = len(keyEventsAll)/(endTime-startTime)
+            self.queryController.updateKPM(KPM)
             for string in writtenStrings:
                 if contains(string, "konami"):
                     print("Exiting Keylogger")
@@ -206,20 +210,24 @@ class KeyLogger():
             print(len(lines))
             self.censorLines(lines)
             keyEvaluation = self.evaluateKeyUsage(lines)
+            self.queryController.updateKeyEvaluation(keyEvaluation)
             WPM = wpm(lines, endTime, startTime)
+            self.queryController.updateCurrentWPM(WPM)
             yield lines
 
     def readFirstNKeyEvents(self):
         keyEvents = []
+        keyEventsAll = []
         checkTime = time.time()
         while time.time()-checkTime < 5:
             keyEvent = keyboard.read_event()
+            keyEventsAll.append(keyEvent)
             checkTime = time.time()
             if len(keyEvents) >= 50 and keyEvent.name == "space":
-                return keyEvents
+                return keyEvents, keyEventsAll
             if keyEvent.name != "tab":
                 keyEvents.append(keyEvent)
-        return keyEvents
+        return keyEvents, keyEventsAll
 
     """
     Initiating a generator object with the readKeyInput method. After a enter key is pressed,
@@ -227,6 +235,9 @@ class KeyLogger():
     """
     def main(self):
         self.addAbbreviations()
+        keyboard.remap_hotkey("ctrl+z", " ")
+        callback = lambda: self.queryController.updateSCS(-5)
+        keyboard.add_hotkey("ctrl+z", callback)
         log = []
         counter = 0
         for lines in self.readKeyEvents():

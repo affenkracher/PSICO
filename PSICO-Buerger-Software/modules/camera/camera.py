@@ -3,17 +3,25 @@ import os
 import base64
 import time
 
+def getCWD():
+    CWD = os.getcwd()
+    if CWD.find("\\PSICO-Buerger-Software") >= 0:
+        cut = len("\\PSICO-Buerger-Software")
+        CWD = CWD[0:-cut]
+    return CWD
+
 """
 The CameraLogger is a module designed to take and save a pictures
 """
 
 class CameraLogger():
     def __init__(self, queryController):
-        self.queryController = queryController
         """
         Add a storagePath to store the pictures
         """
-        self.storagePath = os.getcwd() + "\\PSICO-Buerger-Software\\modules\\camera\\storage\\"
+        self.queryController = queryController
+        self.storagePath = getCWD() + "\\PSICO-Buerger-Software\\modules\\camera\\storage\\"
+        self.pictureId = 0
 
 
     """
@@ -48,11 +56,15 @@ class CameraLogger():
             return
         picture = self.takePicture(cam)
         self.showPicture(picture)
+        fileName = self.storagePath + f'{self.pictureId}.png'
+        cv2.imwrite(fileName, picture)
+        self.pictureId = self.pictureId + 1
+        self.queryController.addToCameraLog(fileName)
         self.deleteCamera(cam)
 
     """
     Only a bit unnecessary main method, take a picture after 3 seconds to get ready
     """
-    def main(self):
+    def main(self):  
         time.sleep(3)
         self.record()
