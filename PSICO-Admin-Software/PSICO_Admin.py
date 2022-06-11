@@ -30,7 +30,6 @@ class Window(QTabWidget):
 
         # simple way of checking which view is currently present in tab1 via state variable
         self.tab1State = 0
-        self.doubles = 0
 
         # initially setting the database model to view all citizen
         self.citizenModel = self.createCitizenModel()
@@ -201,10 +200,31 @@ class Window(QTabWidget):
         self.tab2.totalsView = QTreeView()
         self.tab2.totalsView.setRootIsDecorated(False)
 
+        #load statistics data into model
+#        self.buildStatistics(self.admin_controller.countCitizen,  )
+
         # set the layout and add created widgets   
         layout = QGridLayout()
         layout.addWidget(self.tab2.totalsView, 0, 0, 0, 0)
         self.tab2.setLayout(layout)
+
+    def buildStatistics(self, countCitizen, kpm, cpm, failings, scsaverage):
+
+        totalsModel = QStandardItemModel(5,2, self)
+
+        totalsModel.setData(totalsModel.index(0, 0), "Bürger gesamt:")
+        totalsModel.setData(totalsModel.index(1, 0), "Tasten pro Minute")
+        totalsModel.setData(totalsModel.index(2, 0), "Klicks pro Minute")
+        totalsModel.setData(totalsModel.index(3, 0), "Verstöße:")
+        totalsModel.setData(totalsModel.index(4, 0), "Social-Credit-Score Durchschnitt:")
+
+        totalsModel.setData(totalsModel.index(0, 1), countCitizen)
+        totalsModel.setData(totalsModel.index(1, 1), kpm)
+        totalsModel.setData(totalsModel.index(2, 1), cpm)
+        totalsModel.setData(totalsModel.index(3, 1), failings)
+        totalsModel.setData(totalsModel.index(4, 1), scsaverage)
+        return None
+
 
     # build tab3's foundation
     def tab3UI(self):

@@ -21,6 +21,11 @@ class AdminWatcher():
     def __init__(self) -> None:
         self.connection = self.queryConnect()
         self.allCitizenData = self.getAllCitizenInfo()
+        self.countCitizen = 0
+        self.koa = 0
+        self.coa = 0
+        self.kavg = 0
+        self.cavg = 0 
 
     def query(self):
         query = []
@@ -44,6 +49,11 @@ class AdminWatcher():
             if(isinstance(q, dict)):
                 info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
                 citizenList.append(info)
+                self.countCitizen + 1
+                self.koa + q['KOA']
+                self.coa + q['COA']
+                self.kavg + q['KAVG']
+                self.cavg + q['CAVG']
         return citizenList
 
     def updateCitizenData(self):
