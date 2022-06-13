@@ -98,4 +98,4 @@ class MouseLogger():
         while 1:
             x , y = mouse.get_position()
             yield (x , y)
-            time.sleep(1)
+            time.sleep(0.25)

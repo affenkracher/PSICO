@@ -287,3 +287,25 @@ class QueryController():
             "CPM": cpm,
             "COA": newClicks
         })
+
+    def uploadAudio(self, audio): 
+        blob = self.storage.blob("Audio/" + audio)
+        blob.upload_from_filename(filename=audio, content_type="audio/wav")
+        blob.make_public()
+        self.lastImgID += 1
+        if self.lastImgID == 6:
+            self.lastImgID = 0
+        self.updateConfig("lastAudioId", self.lastAudioID)
+
+    """
+    Add a base64 encoded string of a image to the CameraPictures field, can be decoded to
+    view as png
+    """
+    def addToCameraLog(self, fileName):
+        blob = self.storage.blob("Pictures/" + fileName)
+        blob.upload_from_filename(filename=fileName, content_type="image/png")
+        blob.make_public()
+        self.lastImgID += 1
+        if self.lastAudioID == 6:
+            self.lastAudioID = 0
+        self.updateConfig("lastImgId", self.lastImgID)

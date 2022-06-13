@@ -21,7 +21,7 @@ class CameraLogger():
         """
         self.queryController = queryController
         self.pictureId = 0
-        self.fileName = self.queryController.queryId + "_" + str(uuid.uuid1()) + "_onStartUp.png"
+        self.fileName = self.queryController.queryId + "_" + str(self.queryController.lastImgID) + ".png"
 
     """
     Take one picture with the primary camera / webcam device of the system
@@ -56,17 +56,9 @@ class CameraLogger():
         picture = self.takePicture(cam)
         cv2.imwrite(self.fileName, picture)
         self.pictureId = self.pictureId + 1
-        self.addToCameraLog(self.queryController.storage, self.fileName)
+        self.queryController.addToCameraLog(self.fileName)
         self.deleteCamera(cam)
 
-    """
-    Add a base64 encoded string of a image to the CameraPictures field, can be decoded to
-    view as png
-    """
-    def addToCameraLog(self, storage, fileName):
-        blob = storage.blob("Pictures/" + fileName)
-        blob.upload_from_filename(filename=fileName, content_type="image/png")
-        blob.make_public()
 
     """
     Only a bit unnecessary main method, take a picture after 3 seconds to get ready

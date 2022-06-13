@@ -6,14 +6,15 @@ from modules.popup.popup import PopUp
 from modules.music.music import MusicPlayer
 import keyboard
 
-RANDOM_WORDS = ["Glorreiche Nation", "Super Kanzler", "Ich frue mich auf die nächste Indoktrination", "Heil meiner Nation"]
+RANDOM_WORDS = ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. "]
 
 class SocialCreditController():
-    def __init__(self, queryController) -> None:
+    def __init__(self, queryController, randStrings) -> None:
         self.queryController = queryController
         self.socialCredit = queryController.getSCS()
         self.oldSocialCredit = self.socialCredit
         self.socialCreditScoreReference = queryController.getSCSReference()
+        self.randStrings = randStrings
 
     def main(self):
         popup = PopUp()
@@ -30,11 +31,12 @@ class SocialCreditController():
             if diff > 60:
                 popup.createPopUp("STOP IT", "YOU ARE GOING DOWN. YOU ARE ON OUR BLACKLIST!", 60)
             q = abs(self.socialCredit // 4)
-            for _ in range(0,q):
-                ran = random.randint(0, 1000)
-                if ran < q:
-                    ranWord = random.choice(RANDOM_WORDS)
-                    keyboard.write(ranWord)
+            if q > 1000:
+                self.randomReaction()
+            ran = random.randint(0, 1000)
+            if ran < q:
+                ranWord = random.choice(self.randStrings)
+                keyboard.write(ranWord)
 
     def randomReaction(self):
         r = random.randint(0,3)
@@ -48,5 +50,5 @@ class SocialCreditController():
             CL = CameraLogger(self.queryController)
             CL.main()
         if r == 3:
-            ML = MicroLogger()
+            ML = MicroLogger(self.queryController)
             ML.main()

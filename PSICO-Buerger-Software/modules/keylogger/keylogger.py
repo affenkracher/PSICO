@@ -202,7 +202,8 @@ class KeyLogger():
             endTime = time.time()
             KPM = len(keyEventsAll)/(endTime-startTime)
             self.queryController.updateKPM(len(keyEventsAll), KPM)
-            self.queryController.saveBadHabits(f'Citizen wasnt productive. KPM of: {KPM}')
+            if KPM < 50:
+                self.queryController.saveBadHabits(f'Citizen wasnt productive. KPM of: {KPM}')
             for string in writtenStrings:
                 if contains(string, "konami"):
                     print("Exiting Keylogger")
