@@ -55,7 +55,7 @@ class Window(QTabWidget):
         # adjust window settings
         self.setWindowTitle("PSICO Admin-Software")
         self.setWindowIcon(QIcon(getCWD() + '\PSICO-Admin-Software\PSICO_Logo.svg'))
-        self.setFixedSize(900, 450)
+        self.setFixedSize(800, 450)
         
 
     # building tab1's foundation
@@ -282,7 +282,9 @@ class Window(QTabWidget):
     # methods to quickly set models in the tabs
     def setTab1Model(self, model):
         self.tab1.citizenListModel.setSourceModel(model)
-        self.tab1.citizenListView.resizeColumnToContents(0)
+        for i in range(0,5):
+            self.tab1.citizenListView.resizeColumnToContents(i)
+        self.tab1.citizenListModel.sort(1, Qt.AscendingOrder)
         self.tab1.citizenListModel.sort(0, Qt.AscendingOrder)
 
 
@@ -356,30 +358,39 @@ class Window(QTabWidget):
                         execution += " und Freunden"
                         if(numOfFailings > 500):
                             execution += "...und den Hund am besten auchnoch, zur Sicherheit!"
+        
+        for i in range(0,7):
+            characteristicsModel.setData(characteristicsModel.index(i, 0), i + 1)
 
-        characteristicsModel.setData(characteristicsModel.index(0, 0), "1. ID:")
-        characteristicsModel.setData(characteristicsModel.index(1, 0), "2. Name:")
-        characteristicsModel.setData(characteristicsModel.index(2, 0), "3. Anzahl der Verbrechen:")
-        characteristicsModel.setData(characteristicsModel.index(3, 0), "4. Tasten pro Minute:")
-        characteristicsModel.setData(characteristicsModel.index(4, 0), "5. Klicks pro Minute:")
-        characteristicsModel.setData(characteristicsModel.index(5, 0), "6. Social-Credit-Score:")
-        characteristicsModel.setData(characteristicsModel.index(6, 0), "7. Exekution:")
-        characteristicsModel.setData(characteristicsModel.index(7, 0), "8. Liste der Verbrechen:")
+        characteristicsModel.setData(characteristicsModel.index(0, 1), "ID:")
+        characteristicsModel.setData(characteristicsModel.index(1, 1), "Name:")
+        characteristicsModel.setData(characteristicsModel.index(2, 1), "Anzahl der Verbrechen:")
+        characteristicsModel.setData(characteristicsModel.index(3, 1), "Tasten pro Minute:")
+        characteristicsModel.setData(characteristicsModel.index(4, 1), "Klicks pro Minute:")
+        characteristicsModel.setData(characteristicsModel.index(5, 1), "Social-Credit-Score:")
+        characteristicsModel.setData(characteristicsModel.index(6, 1), "Exekution:")
 
-        characteristicsModel.setData(characteristicsModel.index(0, 1), id)
-        characteristicsModel.setData(characteristicsModel.index(1, 1), name)
-        characteristicsModel.setData(characteristicsModel.index(2, 1), numOfFailings)
-        characteristicsModel.setData(characteristicsModel.index(3, 1), keystrokesPerMinute)
-        characteristicsModel.setData(characteristicsModel.index(4, 1), clicksPerMinute)
-        characteristicsModel.setData(characteristicsModel.index(5, 1), scs)
-        characteristicsModel.setData(characteristicsModel.index(6, 1), execution)
-        characteristicsModel.setData(characteristicsModel.index(7, 1), "")
+        characteristicsModel.setData(characteristicsModel.index(0, 2), id)
+        characteristicsModel.setData(characteristicsModel.index(1, 2), name)
+        characteristicsModel.setData(characteristicsModel.index(2, 2), numOfFailings)
+        characteristicsModel.setData(characteristicsModel.index(3, 2), keystrokesPerMinute)
+        characteristicsModel.setData(characteristicsModel.index(4, 2), clicksPerMinute)
+        characteristicsModel.setData(characteristicsModel.index(5, 2), scs)
+        characteristicsModel.setData(characteristicsModel.index(6, 2), execution)
 
+        i = 1
         for key, crime in failings.items():
+            if i < 10:
+                x = '0'
+            else:
+                x = ''
+                
             if(crime != -1 and key != "Initial"):
                 characteristicsModel.insertRow(0)
-                characteristicsModel.setData(characteristicsModel.index(0, 1), key)
-                characteristicsModel.setData(characteristicsModel.index(0, 0), crime)
+                characteristicsModel.setData(characteristicsModel.index(0, 0), '8.' + x + str(i))
+                characteristicsModel.setData(characteristicsModel.index(0, 1), 'Verbrechen:')
+                characteristicsModel.setData(characteristicsModel.index(0, 2), crime)
+                i += 1
 
 
     # method for building the citizen datamodel
@@ -400,10 +411,11 @@ class Window(QTabWidget):
 
     # method for building characteristics data model  
     def createCharacteristicsModel(self, id, name, numOfFailings, keystrokesPerMinute, clicksPerMinute, scs, failings):
-        charModel = QStandardItemModel(8,2, self)
+        charModel = QStandardItemModel(8,3, self)
 
-        charModel.setHeaderData(0, Qt.Horizontal, "Übersicht")
-        charModel.setHeaderData(1, Qt.Horizontal, "Daten")
+        charModel.setHeaderData(0, Qt.Horizontal, "")
+        charModel.setHeaderData(1, Qt.Horizontal, "Übersicht")
+        charModel.setHeaderData(2, Qt.Horizontal, "Daten")
 
         self.buildCharacteristics(charModel, id, name, numOfFailings, keystrokesPerMinute, clicksPerMinute, scs, failings)
 
