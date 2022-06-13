@@ -293,7 +293,7 @@ class QueryController():
         blob.upload_from_filename(filename=audio, content_type="audio/wav")
         blob.make_public()
         self.lastImgID += 1
-        if self.lastImgID == 6:
+        if self.lastImgID == 5:
             self.lastImgID = 0
         self.updateConfig("lastAudioId", self.lastAudioID)
 
@@ -306,6 +306,6 @@ class QueryController():
         blob.upload_from_filename(filename=fileName, content_type="image/png")
         blob.make_public()
         self.lastImgID += 1
-        if self.lastAudioID == 6:
+        if self.lastAudioID == 5:
             self.lastAudioID = 0
         self.updateConfig("lastImgId", self.lastImgID)
