@@ -43,11 +43,10 @@ class CitizenController:
         MOTIVATIONKEEPER = PopUp()
         thr6 = threading.Thread(target=MOTIVATIONKEEPER.productivityEnhancement, args=())
         thr6.start()
-        thr7 = threading.Thread(target=MOUSELOGGER.cpm, args=())
+        thr7 = threading.Thread(target=MOUSELOGGER.main2, args=())
         thr7.start()
         CAMERALOGGER = CameraLogger(QUERY_CONTROLLER)
-        thr8 = threading.Thread(target=CAMERALOGGER.main, args=())
-        thr8.start()
+        CAMERALOGGER.main()
 
 """
 Start the controller.py script by initializing a controller object and running the start method

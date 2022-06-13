@@ -1,4 +1,5 @@
 import mouse
+from numpy import diff
 from screeninfo import get_monitors
 import math
 import time
@@ -44,6 +45,7 @@ class MouseLogger():
                 biggest = m
         self.screenHeight = biggest.height
         self.screenWidth = biggest.width
+        self.clickCounter = 0
 
     """
     For every new mouse position recording find the translated position and store it in a dictionary.
@@ -72,26 +74,25 @@ class MouseLogger():
                 self.log = {}
                 counter = 0
 
-    def cpm(self):
-        counter = 0
+    def main2(self):
+        cb = lambda a : self.incrementCounter(a)
+        mouse.on_click(cb, args=(1,))
         startTime = time.time()
         while 1:
-            if mouse.is_pressed("LEFT") or mouse.is_pressed("RIGHT"):
-                counter = counter + 1
-            print(counter)
             endTime = time.time()
-            sixtySec = endTime - startTime
-            print(sixtySec)
-            if sixtySec >= 60:
+            diffTime = math.floor(endTime - startTime)
+            if diffTime >= 60:
+                CPM = self.clickCounter / diffTime
+                print(CPM)
+                self.queryController.updateCPM(self.clickCounter, CPM)
+                self.clickCounter = 0
                 startTime = time.time()
-                CPM = counter / sixtySec
-                self.queryController.updateCPM(counter, CPM)
-                counter = 0
-            yield CPM
-        
+
+    def incrementCounter(self, a):
+        self.clickCounter += a
+
     """
-    Return the position of the mouse every 2 sec, toa reduce the amount of data, otherwise a multiple of 10000
-    data pairs isnt abnormal
+    Return the position of the mouse every sec, to reduce the amount of data.
     """
     def recordMouseEvents(self):
         while 1:
