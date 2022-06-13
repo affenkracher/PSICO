@@ -143,13 +143,11 @@ class AdminWatcher():
                 mouseData[(x,y)] = freq
         return mouseData
     
-    def load_file(self):
+    def analyzeString(self):
         
         allowedkeys = ("esc","~","`","1","2","3","4","5","6","7","8","9","0","!","@","#","$","%","^","&","*","(",")","-","=","_","+","del","tab","q","w","e","r","t","y","u","i","o","p","[","{","]","}","\\","|","a","s","d","f","g","h","j","k","l",":",";","'","\"","\n","shift","z","x","c","v","b","n","m",",",".","<",">","/","?","fn","ctrl","opt","cmd"," ","up","left","down","right","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z")
 
-        #open file
-        f = open(self.getCWD() + '\\PSICO-Admin-Software\\res\\logfile.txt', 'r')
-        fstr = f.read()
+        fstr = self.keyLogSting
         keyCount = {}
         
         #convert special comands
@@ -227,7 +225,7 @@ class AdminWatcher():
         sortedCount = sorted(keyCount.items(), key=operator.itemgetter(1))
         return sortedCount
 
-    def display(self, dt, screen):
+    def mapStringOnKeyboard(self, dt, screen):
 
         sizeMappings = {1:(44,44),2:(65, 47),3:(90, 47),4:(116, 47),5:(49, 28),6:(260,54),8:(50, 54),7:(49,54)}
 
@@ -285,8 +283,8 @@ class AdminWatcher():
         pygame.display.set_icon(icon)
         screen = pygame.display.set_mode(size)
         screen.blit(keyboard, keyRect)
-        count = self.load_file()
-        self.display(count, screen)
+        count = self.analyzeString()
+        self.mapStringOnKeyboard(count, screen)
         pygame.display.update()
         running  = True
         while running:
