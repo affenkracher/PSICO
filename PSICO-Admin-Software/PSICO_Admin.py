@@ -35,7 +35,7 @@ class Window(QTabWidget):
         self.citizenModel = self.createCitizenModel()
         self.addEntryList(self.adminController.allCitizenData)
 
-        self.totalsModel = self.buildTotals(self.adminController.countCitizen, self.adminController.koa, self.adminController.coa, self.adminController.kavg, self.adminController.cavg, self.adminController.failings, self.adminController.failings, self.adminController.scsavg)
+        self.totalsModel = self.buildTotals(self.adminController.numOfCitizen, self.adminController.numOfKeystrokes, self.adminController.numOfClicks, self.adminController.avgNumOfKeystrokesPerMinute, self.adminController.avgNumOfClicksPerMinute, self.adminController.sumNumOfCitizenFailings, self.adminController.avgNumOfFailings, self.adminController.avgSocialCreditScore)
 
         # add tabs to the window
         self.addTab(self.tab1,"Bürgeranalyse")
@@ -154,11 +154,11 @@ class Window(QTabWidget):
             # fetching data from the double clicked entry
             id = index.siblingAtColumn(0)
             name = index.siblingAtColumn(1)
-            failings = index.siblingAtColumn(2)
-            cntFailings = index.siblingAtColumn(3)
-            keystrokes = index.siblingAtColumn(4)
-            clicks = index.siblingAtColumn(5)
-            scp = index.siblingAtColumn(6)
+            numOfFailings = index.siblingAtColumn(2)
+            keystrokesPerMinute = index.siblingAtColumn(3)
+            clicksPerMinute = index.siblingAtColumn(4)
+            scs = index.siblingAtColumn(5)
+            listOfFilings = index.siblingAtColumn(6)
             
             self.tab1.lastCitizenId = id.data()
 
@@ -175,7 +175,7 @@ class Window(QTabWidget):
             self.tab1.backButton.show()
             self.tab1.heatmapButton.show()
             
-            self.charViewUI(id.data(), name.data(), failings.data(), cntFailings.data(), keystrokes.data(), clicks.data(), scp.data())
+            self.charViewUI(id.data(), name.data(), numOfFailings.data(), keystrokesPerMinute.data(), clicksPerMinute.data(), scs.data(), listOfFilings.data())
             
 
     # return to all view mode if in characteristics view #subject to change
@@ -216,7 +216,7 @@ class Window(QTabWidget):
         self.tab2.setLayout(layout)
 
 
-    def buildTotals(self, countCitizen, koa, coa, kpm, cpm, failings, failingsavg, scsaverage):
+    def buildTotals(self, numOfCitizen, numOfKeysPressed, numOfClicks, avgNumOfKeystrokesPerMinute, avgNumOfClicksPerMinute, numOfCitizenFailings, avgNumOfFailings, avgSocialCreditScore):
 
         totalsModel = QStandardItemModel(8,2, self)
 
@@ -224,7 +224,7 @@ class Window(QTabWidget):
         totalsModel.setHeaderData(1, Qt.Horizontal, "Daten")
 
         totalsModel.setData(totalsModel.index(0, 0), "Bürger gesamt:")
-        totalsModel.setData(totalsModel.index(1, 0), "Tasten gesamt gedrückt:")
+        totalsModel.setData(totalsModel.index(1, 0), "Tastendücke gesamt:")
         totalsModel.setData(totalsModel.index(2, 0), "Klicks gesamt:")
         totalsModel.setData(totalsModel.index(3, 0), "Tasten pro Minute:")
         totalsModel.setData(totalsModel.index(4, 0), "Klicks pro Minute:")
@@ -232,14 +232,14 @@ class Window(QTabWidget):
         totalsModel.setData(totalsModel.index(6, 0), "Verstöße pro Kopf:")
         totalsModel.setData(totalsModel.index(7, 0), "Social-Credit-Score Durchschnitt:")
 
-        totalsModel.setData(totalsModel.index(0, 1), countCitizen)
-        totalsModel.setData(totalsModel.index(1, 1), koa)
-        totalsModel.setData(totalsModel.index(2, 1), coa)
-        totalsModel.setData(totalsModel.index(3, 1), kpm)
-        totalsModel.setData(totalsModel.index(4, 1), cpm)
-        totalsModel.setData(totalsModel.index(5, 1), failings)
-        totalsModel.setData(totalsModel.index(6, 1), failingsavg)
-        totalsModel.setData(totalsModel.index(7, 1), scsaverage)
+        totalsModel.setData(totalsModel.index(0, 1), numOfCitizen)
+        totalsModel.setData(totalsModel.index(1, 1), numOfKeysPressed)
+        totalsModel.setData(totalsModel.index(2, 1), numOfClicks)
+        totalsModel.setData(totalsModel.index(3, 1), avgNumOfKeystrokesPerMinute)
+        totalsModel.setData(totalsModel.index(4, 1), avgNumOfClicksPerMinute)
+        totalsModel.setData(totalsModel.index(5, 1), numOfCitizenFailings)
+        totalsModel.setData(totalsModel.index(6, 1), avgNumOfFailings)
+        totalsModel.setData(totalsModel.index(7, 1), avgSocialCreditScore)
 
         return totalsModel
 
@@ -267,7 +267,7 @@ class Window(QTabWidget):
 
 
     # create a one time use characteristics model and view from data passed from the view
-    def charViewUI(self, id, name, failings, cntFailings, keystrokes, clicks, scp):
+    def charViewUI(self, id, name, numOfFailings, keystrokesPerMinute, clicksPerMinute, scs, failings):
         self.tab1.charModel = QSortFilterProxyModel()
         self.tab1.charModel.setDynamicSortFilter(True)
 
@@ -276,13 +276,14 @@ class Window(QTabWidget):
         self.tab1.charView.setModel(self.tab1.charModel)
         self.tab1.charView.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-        self.setTab1Model(self.createCharacteristicsModel(id, name, failings, cntFailings, keystrokes, clicks, scp))
+        self.setTab1Model(self.createCharacteristicsModel(id, name, numOfFailings, keystrokesPerMinute, clicksPerMinute, scs, failings))
 
 
     # methods to quickly set models in the tabs
     def setTab1Model(self, model):
         self.tab1.citizenListModel.setSourceModel(model)
         self.tab1.citizenListView.resizeColumnToContents(0)
+        self.tab1.citizenListModel.sort(0, Qt.AscendingOrder)
 
 
     def setTab2Model(self, model):
@@ -315,15 +316,15 @@ class Window(QTabWidget):
 
 
     # method for adding entries in the current datamodel
-    def addEntry(self, citizenModel, id, name, failings, cntFailings, keysPerMinute, clicksPerMinute, scs):
+    def addEntry(self, citizenModel, id, name, cntFailings, keysPerMinute, clicksPerMinute, scs, failings):
         citizenModel.insertRow(0)
         citizenModel.setData(citizenModel.index(0, 0), id)
         citizenModel.setData(citizenModel.index(0, 1), name)
-        citizenModel.setData(citizenModel.index(0, 2), failings)
-        citizenModel.setData(citizenModel.index(0, 3), cntFailings)
-        citizenModel.setData(citizenModel.index(0, 4), keysPerMinute)
-        citizenModel.setData(citizenModel.index(0, 5), clicksPerMinute)
-        citizenModel.setData(citizenModel.index(0, 6), scs)
+        citizenModel.setData(citizenModel.index(0, 2), cntFailings)
+        citizenModel.setData(citizenModel.index(0, 3), keysPerMinute)
+        citizenModel.setData(citizenModel.index(0, 4), clicksPerMinute)
+        citizenModel.setData(citizenModel.index(0, 5), scs)
+        citizenModel.setData(citizenModel.index(0, 6), failings)
 
 
     # method for adding a list of entries in the current datamodel
@@ -337,40 +338,40 @@ class Window(QTabWidget):
                 kpm = citizen['KPM']
                 cpm = citizen['CPM']
                 scs = citizen['SCS']
-                self.addEntry(self.citizenModel, id, name, failings, cntFailings, kpm, cpm, scs)
+                self.addEntry(self.citizenModel, id, name, cntFailings, kpm, cpm, scs, failings)
 
 
     # method for building the characteristics view
-    def buildCharacteristics(self, characteristicsModel, id, name, failings, cntFailings, keystrokes, clicks, scp):
+    def buildCharacteristics(self, characteristicsModel, id, name, numOfFailings, keystrokesPerMinute, clicksPerMinute, scs, failings):
 
         execution = "Möglich"
 
-        if(cntFailings > 20):
-            execution = "Empfohlen"
-            if(cntFailings > 100):
+        if(numOfFailings > 20):
+            execution = "Exekution Empfohlen"
+            if(numOfFailings > 100):
                 execution = "Exekution erforderlich"
-                if(cntFailings > 200):
-                    execution + " mitsamt Familie"
-                    if(cntFailings > 300):
-                        execution + " und Freunden"
-                        if(cntFailings > 500):
-                            execution + "...und den Hund am besten auchnoch, zur Sicherheit"
+                if(numOfFailings > 200):
+                    execution += " mitsamt Familie"
+                    if(numOfFailings > 300):
+                        execution += " und Freunden"
+                        if(numOfFailings > 500):
+                            execution += "...und den Hund am besten auchnoch, zur Sicherheit!"
 
-        characteristicsModel.setData(characteristicsModel.index(0, 0), "1.ID:")
-        characteristicsModel.setData(characteristicsModel.index(1, 0), "2.Name:")
-        characteristicsModel.setData(characteristicsModel.index(2, 0), "3.Verbrechen:")
-        characteristicsModel.setData(characteristicsModel.index(3, 0), "4.Tasten pro Minute:")
-        characteristicsModel.setData(characteristicsModel.index(4, 0), "5.Klicks pro Minute:")
-        characteristicsModel.setData(characteristicsModel.index(5, 0), "6.Social-Credit-Score:")
-        characteristicsModel.setData(characteristicsModel.index(6, 0), "7.Exekution:")
-        characteristicsModel.setData(characteristicsModel.index(7, 0), "8.Liste der Verbrechen:")
+        characteristicsModel.setData(characteristicsModel.index(0, 0), "1. ID:")
+        characteristicsModel.setData(characteristicsModel.index(1, 0), "2. Name:")
+        characteristicsModel.setData(characteristicsModel.index(2, 0), "3. Anzahl der Verbrechen:")
+        characteristicsModel.setData(characteristicsModel.index(3, 0), "4. Tasten pro Minute:")
+        characteristicsModel.setData(characteristicsModel.index(4, 0), "5. Klicks pro Minute:")
+        characteristicsModel.setData(characteristicsModel.index(5, 0), "6. Social-Credit-Score:")
+        characteristicsModel.setData(characteristicsModel.index(6, 0), "7. Exekution:")
+        characteristicsModel.setData(characteristicsModel.index(7, 0), "8. Liste der Verbrechen:")
 
         characteristicsModel.setData(characteristicsModel.index(0, 1), id)
         characteristicsModel.setData(characteristicsModel.index(1, 1), name)
-        characteristicsModel.setData(characteristicsModel.index(2, 1), cntFailings)
-        characteristicsModel.setData(characteristicsModel.index(3, 1), keystrokes)
-        characteristicsModel.setData(characteristicsModel.index(4, 1), clicks)
-        characteristicsModel.setData(characteristicsModel.index(5, 1), scp)
+        characteristicsModel.setData(characteristicsModel.index(2, 1), numOfFailings)
+        characteristicsModel.setData(characteristicsModel.index(3, 1), keystrokesPerMinute)
+        characteristicsModel.setData(characteristicsModel.index(4, 1), clicksPerMinute)
+        characteristicsModel.setData(characteristicsModel.index(5, 1), scs)
         characteristicsModel.setData(characteristicsModel.index(6, 1), execution)
         characteristicsModel.setData(characteristicsModel.index(7, 1), "")
 
@@ -384,26 +385,27 @@ class Window(QTabWidget):
     # method for building the citizen datamodel
     def createCitizenModel(self):
 
-        self.citizenModel = QStandardItemModel(0, 6, self)
+        self.citizenModel = QStandardItemModel(0, 7, self)
 
         self.citizenModel.setHeaderData(0, Qt.Horizontal, "ID")
         self.citizenModel.setHeaderData(1, Qt.Horizontal, "Name")
-        self.citizenModel.setHeaderData(2, Qt.Horizontal, "Verbrechen")
+        self.citizenModel.setHeaderData(2, Qt.Horizontal, "Anzahl Verbrechen")
         self.citizenModel.setHeaderData(3, Qt.Horizontal, "Tastenanschläge / min")
         self.citizenModel.setHeaderData(4, Qt.Horizontal, "Klicks / min")
         self.citizenModel.setHeaderData(5, Qt.Horizontal, "Social-Credit-Punkte")
+        self.citizenModel.setHeaderData(6, Qt.Horizontal, "")
 
         return self.citizenModel
 
 
     # method for building characteristics data model  
-    def createCharacteristicsModel(self, id, name, failings, cntFailings, keystrokes, clicks, scp):
+    def createCharacteristicsModel(self, id, name, numOfFailings, keystrokesPerMinute, clicksPerMinute, scs, failings):
         charModel = QStandardItemModel(8,2, self)
 
         charModel.setHeaderData(0, Qt.Horizontal, "Übersicht")
         charModel.setHeaderData(1, Qt.Horizontal, "Daten")
 
-        self.buildCharacteristics(charModel, id, name, failings, cntFailings, keystrokes, clicks, scp)
+        self.buildCharacteristics(charModel, id, name, numOfFailings, keystrokesPerMinute, clicksPerMinute, scs, failings)
 
         return charModel
     
