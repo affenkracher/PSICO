@@ -2,14 +2,18 @@
 .vscode/*
 */.vscode/*
 
+# generated audio and picture files
 *.png
 *.wav
 
-# Firebase Credentials
+# Firebase credentials
 /PSICO-Buerger-Software/res/firebaseCertificate.json
 /PSICO-Admin-Software/res/firebase-certificate.json
 
-# Module Caches
+# personal configuration file
+/PSICO-Buerger-Software/res/queryConfig.json
+
+# module caches
 /PSICO-Buerger-Software/modules/mouselogger/mouse/__pycache__/
 /PSICO-Buerger-Software/modules/keylogger/keyboard/__pycache__/
 /PSICO-Buerger-Software/modules/sccontroller/__pycache__

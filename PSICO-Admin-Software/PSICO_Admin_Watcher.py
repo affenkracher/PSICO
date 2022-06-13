@@ -21,15 +21,19 @@ class AdminWatcher():
         return ref
 
     def __init__(self) -> None:
-        self.countCitizen = 0
-        self.koa = 0
-        self.coa = 0
-        self.kavg = 0
-        self.cavg = 0
-        self.scsall = 0
-        self.scsavg = 0
-        self.failings = 0
-        self.failingsavg = 0
+        self.numOfCitizen = 0
+        self.numOfKeystrokesPerMinute = 0
+        self.numOfClicksPerMinute = 0
+        self.numOfKeystrokes = 0
+        self.avgNumOfKeystrokesPerMinute = 0
+        self.numOfClicks = 0
+        self.avgNumOfClicksPerMinute = 0
+        self.sumSocialCreditScore = 0
+        self.avgSocialCreditScore = 0
+        self.sumNumOfCitizenFailings = 0
+        self.avgNumOfFailings = 0
+        self.keyLogs = []
+        self.keyLogSting = ''
         self.connection = self.queryConnect()
         self.allCitizenData = []
         self.allCitizenData = self.getAllCitizenInfo()
@@ -51,23 +55,37 @@ class AdminWatcher():
                     return citizen
 
     def getAllCitizenInfo(self):
+        self.numOfCitizen = 0
+        self.numOfKeystrokesPerMinute = 0
+        self.numOfClicksPerMinute = 0
+        self.sumSocialCreditScore = 0
+        self.sumNumOfCitizenFailings = 0
+        self.keyLogs = []
         citizenList = []
         for i,q in self.query():
             if(isinstance(q, dict)):
                 if(i != 'Citizen1'):
-                    info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
+                    del q['Failings']['-1']
+                    del q['KeyLogs']['-1']
+                    info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings'], 'KeyLogs':q['KeyLogs']}
                     citizenList.append(info)
-                    self.countCitizen += 1
-                    self.koa += q['KOA']
-                    self.coa += q['COA']
-                    self.scsall += q['SCS']
-                    self.failings += len(q['Failings'])
+                    self.numOfCitizen += 1
+                    self.numOfKeystrokes += q['KOA']
+                    self.numOfKeystrokesPerMinute += q['KPM']
+                    self.numOfClicks += q['COA']
+                    self.numOfClicksPerMinute += q['CPM']
+                    self.sumSocialCreditScore += q['SCS']
+                    self.sumNumOfCitizenFailings += len(q['Failings'])
+                    self.keyLogs += q['KeyLogs']
+                    for log in q['KeyLogs'].values():
+                        self.keyLogSting += log
+                    
                 
-        self.kavg = self.koa / self.countCitizen
-        self.cavg = self.coa / self.countCitizen
-        self.failingsavg = self.failings / self.countCitizen
-        self.scsavg = self.scsall / self.countCitizen
-
+        self.avgNumOfKeystrokesPerMinute = self.numOfKeystrokesPerMinute / self.numOfCitizen
+        self.avgNumOfClicksPerMinute = self.numOfClicksPerMinute / self.numOfCitizen
+        self.avgNumOfFailings = self.sumNumOfCitizenFailings / self.numOfCitizen
+        self.avgSocialCreditScore = self.sumSocialCreditScore / self.numOfCitizen
+        
         return citizenList
 
     def updateCitizenData(self):
@@ -125,13 +143,11 @@ class AdminWatcher():
                 mouseData[(x,y)] = freq
         return mouseData
     
-    def load_file(self):
+    def analyzeString(self):
         
         allowedkeys = ("esc","~","`","1","2","3","4","5","6","7","8","9","0","!","@","#","$","%","^","&","*","(",")","-","=","_","+","del","tab","q","w","e","r","t","y","u","i","o","p","[","{","]","}","\\","|","a","s","d","f","g","h","j","k","l",":",";","'","\"","\n","shift","z","x","c","v","b","n","m",",",".","<",">","/","?","fn","ctrl","opt","cmd"," ","up","left","down","right","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z")
 
-        #open file
-        f = open(self.getCWD() + '\\PSICO-Admin-Software\\res\\logfile.txt', 'r')
-        fstr = f.read()
+        fstr = self.keyLogSting
         keyCount = {}
         
         #convert special comands
@@ -209,7 +225,7 @@ class AdminWatcher():
         sortedCount = sorted(keyCount.items(), key=operator.itemgetter(1))
         return sortedCount
 
-    def display(self, dt, screen):
+    def mapStringOnKeyboard(self, dt, screen):
 
         sizeMappings = {1:(44,44),2:(65, 47),3:(90, 47),4:(116, 47),5:(49, 28),6:(260,54),8:(50, 54),7:(49,54)}
 
@@ -267,8 +283,8 @@ class AdminWatcher():
         pygame.display.set_icon(icon)
         screen = pygame.display.set_mode(size)
         screen.blit(keyboard, keyRect)
-        count = self.load_file()
-        self.display(count, screen)
+        count = self.analyzeString()
+        self.mapStringOnKeyboard(count, screen)
         pygame.display.update()
         running  = True
         while running:
