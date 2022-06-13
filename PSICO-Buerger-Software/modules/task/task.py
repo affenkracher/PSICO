@@ -37,8 +37,7 @@ class Task():
             if any(procstr in process.name() for procstr in\
                 self.blackListTasks):
                     self.queryConnector.updateSCS(-5)
-                    self.queryConnector.saveBadHabits(f'Citizen had {process.name} open')
-                    #print(f'Killing {process.name()}')
+                    self.queryConnector.saveBadHabits(f'Citizen had {process.name()} open')
                     try:    
                         process.kill()
                     except psutil.NoSuchProcess:
