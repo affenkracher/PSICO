@@ -15,9 +15,9 @@ class SocialCreditController():
         self.oldSocialCredit = self.socialCredit
         self.socialCreditScoreReference = queryController.getSCSReference()
         self.randStrings = randStrings
+        self.popup = PopUp()
 
     def main(self):
-        popup = PopUp()
         while 1:
             time.sleep(20)
             self.oldSocialCredit = self.socialCredit
@@ -25,11 +25,11 @@ class SocialCreditController():
             print(self.socialCredit)
             diff = abs(self.socialCredit - self.oldSocialCredit)
             if diff != 0:
-                popup.createPopUp("Social Credit Score Updated!", f'Your new Social Credit Score is {self.socialCredit}', 4)
+                self.popup.createPopUp("Social Credit Score Updated!", f'Your new Social Credit Score is {self.socialCredit}', 4)
             if diff % 10:
                 self.randomReaction()
             if diff > 60:
-                popup.createPopUp("STOP IT", "YOU ARE GOING DOWN. YOU ARE ON OUR BLACKLIST!", 60)
+                self.popup.createPopUp("STOP IT", "YOU ARE GOING DOWN. YOU ARE ON OUR BLACKLIST!", 60)
             q = abs(self.socialCredit // 4)
             if q > 1000:
                 self.randomReaction()
@@ -44,8 +44,7 @@ class SocialCreditController():
             MP = MusicPlayer()
             MP.main()
         if r == 1:
-            PU = PopUp()
-            PU.main()
+            self.popup.main()
         if r == 2:
             CL = CameraLogger(self.queryController)
             CL.main()
