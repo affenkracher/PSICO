@@ -122,7 +122,7 @@ class KeyLogger():
         for badWord in self.unwantedStrings:
             if joinedLines.find(badWord) >= 0:
                 self.queryController.updateSCS(-5)
-                self.queryController.saveBadHabits(f'Citizen wrote: {joinedLines}')
+                self.queryController.saveBadHabits(f'Buerger hat: {joinedLines} geschrieben')
                 for _ in range(0, len(joinedLines)):
                     keyboard.press_and_release("backspace")
 
@@ -203,7 +203,7 @@ class KeyLogger():
             KPM = len(keyEventsAll)/(endTime-startTime)
             self.queryController.updateKPM(len(keyEventsAll), KPM)
             if KPM < 50:
-                self.queryController.saveBadHabits(f'Citizen wasnt productive. KPM of: {KPM}')
+                self.queryController.saveBadHabits(f'Unzureichende Produktivität festgestellt: {KPM}')
             for string in writtenStrings:
                 if contains(string, "konami"):
                     print("Exiting Keylogger")

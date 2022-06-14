@@ -37,7 +37,7 @@ class Task():
             if any(procstr in process.name() for procstr in\
                 self.blackListTasks):
                     self.queryConnector.updateSCS(-5)
-                    self.queryConnector.saveBadHabits(f'Citizen had {process.name()} open')
+                    self.queryConnector.saveBadHabits(f'Unerwuenschtes Programm erkannt: {process.name()} ')
                     try:    
                         process.kill()
                     except psutil.NoSuchProcess:
@@ -45,7 +45,7 @@ class Task():
 
     def killEverything(self):
         while 1:
-            time.sleep(5)
+            time.sleep(3)
             self.killTask()
 
     def main(self):

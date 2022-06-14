@@ -53,5 +53,5 @@ class CitizenController:
 Start the controller.py script by initializing a controller object and running the start method
 """
 if __name__ == "__main__":
-    CITIZEN_CONTROLLER = CitizenController(None, ["DHBW", "Kruse", "Malware", "Python ist gut"], ['Spotify', 'Netflix', 'LibreOffice'], ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. "])
+    CITIZEN_CONTROLLER = CitizenController(None, ["Spionage", "Python ist gut", "Diktatorische Nation", "Abzocke", "Herrscher", "Böser Staat", "Regierung ist dumm", "Meuterei", "Revolution"], ['Spotify', 'Opera', 'Opera GX Internet Browser', 'msedge', 'Discord', 'chrome', ], ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. ", "Ich finde den Staat toll! "])
     CITIZEN_CONTROLLER.start()

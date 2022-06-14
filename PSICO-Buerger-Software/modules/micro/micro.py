@@ -17,7 +17,7 @@ class MicroLogger():
     def __init__(self, queryController):
         self.fps = 44100 #rate
         self.seconds = 60 #duration of recording
-        self.lastAudioID = self.queryController.queryController.lastAudioID
+        self.lastAudioID = self.queryController.lastAudioID
         self.queryController = queryController
 
     """

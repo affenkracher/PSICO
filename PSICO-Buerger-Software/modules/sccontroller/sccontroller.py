@@ -6,7 +6,7 @@ from modules.popup.popup import PopUp
 from modules.music.music import MusicPlayer
 import keyboard
 
-RANDOM_WORDS = ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. "]
+RANDOM_STRINGS = ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. "]
 
 class SocialCreditController():
     def __init__(self, queryController, randStrings) -> None:
