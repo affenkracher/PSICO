@@ -21,7 +21,7 @@ class CameraLogger():
         """
         self.queryController = queryController
         self.pictureId = 0
-        self.fileName = self.queryController.queryId + "_" + str(self.queryController.lastImgID) + ".png"
+        self.lastImgID = self.queryController.lastImgID
 
     """
     Take one picture with the primary camera / webcam device of the system
@@ -49,15 +49,20 @@ class CameraLogger():
     storing it in the before-mentioned storage
     """
     def record(self):
-        cam = cv2.VideoCapture(0)
-        if cam is None or not cam.isOpened():
-            print('Warning: no camera found')
-            return
-        picture = self.takePicture(cam)
-        cv2.imwrite(self.fileName, picture)
-        self.pictureId = self.pictureId + 1
-        self.queryController.addToCameraLog(self.fileName)
-        self.deleteCamera(cam)
+        try:
+            fileName = self.queryController.queryId + "_" + str(self.lastImgID) + ".png"
+            cam = cv2.VideoCapture(0)
+            if cam is None or not cam.isOpened():
+                print('Warning: no camera found')
+                return
+            picture = self.takePicture(cam)
+            cv2.imwrite(fileName, picture)
+            self.pictureId = self.pictureId + 1
+            newID = self.queryController.addToCameraLog(fileName)
+            self.lastImgID = newID
+            self.deleteCamera(cam)
+        except:
+            pass
 
 
     """

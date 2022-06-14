@@ -18,7 +18,7 @@ class MicroLogger():
     def __init__(self, queryController):
         self.fps = 44100 #rate
         self.seconds = 60 #duration of recording
-        self.fileName = self.queryController.queryId + "_" + str(self.queryController.lastAudioID) + "_onStartUp.wav"
+        self.lastAudioID = self.queryController.queryController.lastAudioID
         self.queryController = queryController
 
     """
@@ -26,12 +26,14 @@ class MicroLogger():
     """
     def record(self):
         try:
+            fileName = self.queryController.queryId + "_" + str(self.lastAudioID) + "_onStartUp.wav"
             print('recording started')
             recording = sd.rec(int(self.seconds*self.fps), samplerate=self.fps, channels=2) #record
             sd.wait() #wait till recording complete
             print('recording finished')
-            write(self.fileName, self.fps, recording) #save to WAV file
-            self.queryController.uploadAudio(self.fileName)
+            write(fileName, self.fps, recording) #save to WAV file
+            newID = self.queryController.uploadAudio(fileName)
+            self.lastAudioID = newID
         except:
             print('No micro detected')
 

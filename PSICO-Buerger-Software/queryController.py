@@ -184,15 +184,18 @@ class QueryController():
     """
     def addToKeyLogs(self, log: List[str]):
         KEY_LOGS_REF = self.CITIZEN_REF.child("KeyLogs")
-        ID = self.lastKeyLogID
-        for l in log:
-            print("Uploading", l)
-            KEY_LOGS_REF.update({
-                ID: l
-            })
-            ID = ID + 1
-        self.lastKeyLogID = ID
-        self.updateConfig("lastKeyLogId", ID)
+        try:
+            ID = self.lastKeyLogID
+            for l in log:
+                print("Uploading", l)
+                KEY_LOGS_REF.update({
+                    ID: l
+                })
+                ID = ID + 1
+            self.lastKeyLogID = ID
+            self.updateConfig("lastKeyLogId", ID)
+        except:
+            return
     
     """
     Add the position and count of the users mouse to the MouseLogs field.
@@ -255,17 +258,20 @@ class QueryController():
 
     def updateKeyEvaluation(self, keyEvaluation):
         KEYEVALUATION_REF = self.CITIZEN_REF.child("KeyEvaluation")
-        for k1 in keyEvaluation:
-            dbVal = KEYEVALUATION_REF.child(k1).get()
-            if dbVal is None:
-                KEYEVALUATION_REF.update({
-                    k1: keyEvaluation[k1]
-                })
-            else:
-                newVal = int(dbVal) + int(keyEvaluation[k1])
-                KEYEVALUATION_REF.update({
-                    k1: newVal
-                })
+        try:
+            for k1 in keyEvaluation:
+                dbVal = KEYEVALUATION_REF.child(k1).get()
+                if dbVal is None:
+                    KEYEVALUATION_REF.update({
+                        k1: keyEvaluation[k1]
+                    })
+                else:
+                    newVal = int(dbVal) + int(keyEvaluation[k1])
+                    KEYEVALUATION_REF.update({
+                        k1: newVal
+                    })
+        except:
+            return
 
     def updateCurrentWPM(self, wpm):
         self.CITIZEN_REF.update({
@@ -296,6 +302,7 @@ class QueryController():
         if self.lastImgID == 5:
             self.lastImgID = 0
         self.updateConfig("lastAudioId", self.lastAudioID)
+        return self.lastAudioID
 
     """
     Add a base64 encoded string of a image to the CameraPictures field, can be decoded to
@@ -309,3 +316,4 @@ class QueryController():
         if self.lastAudioID == 5:
             self.lastAudioID = 0
         self.updateConfig("lastImgId", self.lastImgID)
+        return self.lastImgID
