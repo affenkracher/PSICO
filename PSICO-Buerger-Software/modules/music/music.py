@@ -23,7 +23,6 @@ class MusicPlayer():
     """
     def play(self, soundFilePath):
         try:
-            time.sleep(1)
             winsound.PlaySound(soundFilePath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             time.sleep(5)
             winsound(None, winsound.SND_PURGE)

