@@ -249,13 +249,13 @@ class QueryController():
         try:
             for k1 in keyEvaluation:
                 dbVal = KEYEVALUATION_REF.child(k1).get()
-                val = keyEvaluation[k1] % 1000
+                val = keyEvaluation[k1]
                 if dbVal is None:
                     KEYEVALUATION_REF.update({
                         k1: val
                     })
                 else:
-                    val = int(keyEvaluation[k1]) % 1000
+                    val = int(keyEvaluation[k1])
                     newVal = int(dbVal) + val
                     KEYEVALUATION_REF.update({
                         k1: newVal
