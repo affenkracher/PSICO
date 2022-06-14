@@ -185,7 +185,7 @@ class KeyLogger():
             writtenStrings = keyboard.get_typed_strings(keyEvents, allow_backspace=False)
             endTime = time.time()
             KPM = len(keyEventsAll)/(endTime-startTime)
-            #self.queryController.updateKPM(len(keyEventsAll), KPM)
+            self.queryController.updateKPM(len(keyEventsAll), KPM)
             """ if KPM < 50:
                 self.queryController.saveBadHabits(f'Unzureichende Produktivität festgestellt: {KPM}') """
             for string in writtenStrings:
@@ -196,9 +196,9 @@ class KeyLogger():
             self.censorLines(lines)
             keyEvaluation = self.evaluateKeyUsage(lines)
             print(keyEvaluation)
-            #self.queryController.updateKeyEvaluation(keyEvaluation)
+            self.queryController.updateKeyEvaluation(keyEvaluation)
             WPM = wpm(lines, endTime, startTime)
-            #self.queryController.updateCurrentWPM(WPM)
+            self.queryController.updateCurrentWPM(WPM)
             yield lines
 
     def readFirstNKeyEvents(self):
@@ -232,10 +232,7 @@ class KeyLogger():
                     log.append(line)
                 if counter > 5:
                     if self.queryController is not None:
-                        #self.queryController.addToKeyLogs(log)
+                        self.queryController.addToKeyLogs(log)
                         counter = 0
                         log.clear()
                 counter = counter + 1
-
-K = KeyLogger("", ["None"])
-K.main()
