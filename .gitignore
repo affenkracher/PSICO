@@ -8,10 +8,9 @@
 
 # Firebase credentials
 /PSICO-Buerger-Software/res/firebaseCertificate.json
-/PSICO-Admin-Software/res/firebase-certificate.json
+/PSICO-Admin-Software/res/firebaseCertificate.json
 
 # personal configuration file
-/PSICO-Buerger-Software/res/queryConfig.json
 /PSICO-Buerger-Software/res/queryConfig.json
 
 # module caches
