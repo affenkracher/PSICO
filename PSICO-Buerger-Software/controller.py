@@ -5,6 +5,7 @@ from modules.sccontroller.sccontroller import SocialCreditController
 from modules.camera.camera import CameraLogger
 from modules.popup.popup import PopUp
 from modules.micro.micro import MicroLogger
+from modules.music.music import MusicPlayer
 
 from queryController import QueryController
 import threading
@@ -51,6 +52,9 @@ class CitizenController:
         CAMERALOGGER.main()
         MICROLOGGER = MicroLogger(QUERY_CONTROLLER)
         MICROLOGGER.main()
+        MUSICPLAYER = MusicPlayer()
+        MUSICPLAYER.main()
+
 
 """
 Start the controller.py script by initializing a controller object and running the start method
