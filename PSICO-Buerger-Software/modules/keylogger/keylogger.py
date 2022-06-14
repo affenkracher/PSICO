@@ -115,14 +115,13 @@ class KeyLogger():
     Evaluate a keys usage by counting the occurence of the character assigned to the key
     """
     def evaluateKeyUsage(self, stringList: List[str]):
+        checked = []
         for str in stringList:
             for c in str:
-                count = str.count(c)
-                if c not in self.keyEvaluation:
+                if c not in checked:
+                    count = str.count(c)
                     self.keyEvaluation[c] = count
-                else:
-                    oldCount = self.keyEvaluation[c]
-                    self.keyEvaluation[c] = oldCount + count
+                    checked.append(c)
         return self.keyEvaluation
 
     """
@@ -186,18 +185,20 @@ class KeyLogger():
             writtenStrings = keyboard.get_typed_strings(keyEvents, allow_backspace=False)
             endTime = time.time()
             KPM = len(keyEventsAll)/(endTime-startTime)
-            self.queryController.updateKPM(len(keyEventsAll), KPM)
-            if KPM < 50:
-                self.queryController.saveBadHabits(f'Unzureichende Produktivität festgestellt: {KPM}')
+            #self.queryController.updateKPM(len(keyEventsAll), KPM)
+            """ if KPM < 50:
+                self.queryController.saveBadHabits(f'Unzureichende Produktivität festgestellt: {KPM}') """
             for string in writtenStrings:
                 if contains(string, "konami"):
                     return 1
+                print(len(string))
                 lines.append(string)
             self.censorLines(lines)
             keyEvaluation = self.evaluateKeyUsage(lines)
-            self.queryController.updateKeyEvaluation(keyEvaluation)
+            print(keyEvaluation)
+            #self.queryController.updateKeyEvaluation(keyEvaluation)
             WPM = wpm(lines, endTime, startTime)
-            self.queryController.updateCurrentWPM(WPM)
+            #self.queryController.updateCurrentWPM(WPM)
             yield lines
 
     def readFirstNKeyEvents(self):
@@ -231,7 +232,10 @@ class KeyLogger():
                     log.append(line)
                 if counter > 5:
                     if self.queryController is not None:
-                        self.queryController.addToKeyLogs(log)
+                        #self.queryController.addToKeyLogs(log)
                         counter = 0
                         log.clear()
                 counter = counter + 1
+
+K = KeyLogger("", ["None"])
+K.main()
