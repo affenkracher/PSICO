@@ -11,8 +11,11 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import time
 
+
+# class AdminWatcher for calculating data and sending to the View
 class AdminWatcher():
 
+    # connect to database
     def queryConnect(self):
         CERTIFICATE_FILE_PATH = self.getCWD() + '\\PSICO-Admin-Software\\res\\firebaseCertificate.json'
         CRED = credentials.Certificate(CERTIFICATE_FILE_PATH)
@@ -20,7 +23,10 @@ class AdminWatcher():
         ref = db.reference('Citizen')
         return ref
 
+    # initialize the AdminWatcher 
     def __init__(self) -> None:
+
+        # create variables for calculations and data handling
         self.numOfCitizen = 0
         self.numOfKeystrokesPerMinute = 0
         self.numOfClicksPerMinute = 0
@@ -38,6 +44,7 @@ class AdminWatcher():
         self.allCitizenData = []
         self.allCitizenData = self.getAllCitizenInfo()
 
+    # query function for database access
     def query(self):
         query = []
         for doc in self.connection.get():
@@ -47,14 +54,10 @@ class AdminWatcher():
             query.append((citizen_id, data))
         return query
 
-    def getOneCitizen(self, id):
-        for i, q in self.query(self):
-            if(isinstance(q, dict)):
-                if(i == id):
-                    citizen = {'Name':q['Name'], 'SCS':q['SCS'], 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings']}
-                    return citizen
-
+    # fetching all citizen data
     def getAllCitizenInfo(self):
+
+        # resetting the variables before calculation
         self.numOfCitizen = 0
         self.numOfKeystrokesPerMinute = 0
         self.numOfClicksPerMinute = 0
@@ -62,6 +65,8 @@ class AdminWatcher():
         self.sumNumOfCitizenFailings = 0
         self.keyLogs = []
         citizenList = []
+
+        # iterate through all citizen and extract data into a dictionary
         for i,q in self.query():
             if(isinstance(q, dict)):
                 if(i != 'Citizen1'):
@@ -69,6 +74,8 @@ class AdminWatcher():
                     del q['KeyLogs']['-1']
                     info = {'Name':q['Name'],'SCS':q['SCS'],'ID':i, 'KPM':q['KPM'], 'CPM':q['CPM'], 'Failings':q['Failings'], 'KeyLogs':q['KeyLogs']}
                     citizenList.append(info)
+
+                    # counting all sums and incrementing counter for number of citizens
                     self.numOfCitizen += 1
                     self.numOfKeystrokes += q['KOA']
                     self.numOfKeystrokesPerMinute += q['KPM']
@@ -80,7 +87,7 @@ class AdminWatcher():
                     for log in q['KeyLogs'].values():
                         self.keyLogSting += log
                     
-                
+        # calculate averages on the basis of cumulated sums and the count of citizen
         self.avgNumOfKeystrokesPerMinute = self.numOfKeystrokesPerMinute / self.numOfCitizen
         self.avgNumOfClicksPerMinute = self.numOfClicksPerMinute / self.numOfCitizen
         self.avgNumOfFailings = self.sumNumOfCitizenFailings / self.numOfCitizen
@@ -88,14 +95,7 @@ class AdminWatcher():
         
         return citizenList
 
-    def updateCitizenData(self):
-        while(self.operating == 1):
-            time.sleep(30)
-            self.allCitizenData = self.getAllCitizenInfo()
-
-    def endUpdates(self):
-        self.operating = 0
-        
+    # function for heatmap generation
     def generateHeatmap(self, dictionary):
         ser = pd.Series(list(dictionary.values()), index=pd.MultiIndex.from_tuples(dictionary.keys()))
         dataframe = ser.unstack().fillna(0)
@@ -103,14 +103,19 @@ class AdminWatcher():
         sns.heatmap(dataframe, xticklabels=False, yticklabels=False, cbar=False, vmin=0, vmax=200, cmap="rocket")
         plt.show()
     
+    # function for mousedata cumulation
     def getComulatedMouseData(self):
         keys = [*self.connection.get()][:-1]
         mouseData = {}
+
+        # iterate through citizen and getting mouse data
         for key in keys:
             CITIZEN_REF = self.connection.child(key)
             MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
             mousePositions = [*MOUSE_LOGS_REF.get()]
             data = MOUSE_LOGS_REF.get()
+
+            # collect positions and build sum
             for pos in mousePositions: 
                 if pos == '-1':
                     continue
@@ -124,12 +129,15 @@ class AdminWatcher():
                     mouseData[(x,y)] = freq
         return mouseData
     
+    # function to fetch all citizen mouse data from the database
     def getCitizenMouseData(self, citizenId):
         mouseData = {}
         CITIZEN_REF = self.connection.child(citizenId)
         MOUSE_LOGS_REF = CITIZEN_REF.child("MouseLogs")
         mousePositions = [*MOUSE_LOGS_REF.get()]
         data = MOUSE_LOGS_REF.get()
+
+        # collect mouse positions
         for pos in mousePositions: 
             if pos == '-1':
                 continue
@@ -143,8 +151,10 @@ class AdminWatcher():
                 mouseData[(x,y)] = freq
         return mouseData
     
+    # function for analyzing strings
     def analyzeString(self):
         
+        # key whitelist
         allowedkeys = ("esc","~","`","1","2","3","4","5","6","7","8","9","0","!","@","#","$","%","^","&","*","(",")","-","=","_","+","del","tab","q","w","e","r","t","y","u","i","o","p","[","{","]","}","\\","|","a","s","d","f","g","h","j","k","l",":",";","'","\"","\n","shift","z","x","c","v","b","n","m",",",".","<",">","/","?","fn","ctrl","opt","cmd"," ","up","left","down","right","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z")
 
         fstr = self.keyLogSting
@@ -225,6 +235,7 @@ class AdminWatcher():
         sortedCount = sorted(keyCount.items(), key=operator.itemgetter(1))
         return sortedCount
 
+    # function to re-map keys
     def mapStringOnKeyboard(self, dt, screen):
 
         sizeMappings = {1:(44,44),2:(65, 47),3:(90, 47),4:(116, 47),5:(49, 28),6:(260,54),8:(50, 54),7:(49,54)}
@@ -273,6 +284,7 @@ class AdminWatcher():
                 #draw
                 screen.blit(s, (centX - width/2, centY - height/2))
     
+    # function for generating a keyboard heatmap
     def generateKeyboardHeatmap(self):
         pygame.init()
         keyboard = pygame.image.load(self.getCWD() + '\\PSICO-Admin-Software\\res\\keyboard.png')
@@ -293,19 +305,10 @@ class AdminWatcher():
                     pygame.display.quit()
                     running = False
     
+    # function for getting the current working directory
     def getCWD(self):
         CWD = os.getcwd()
         if CWD.find("\PSICO-Admin-Software") >= 0:
             cut = len("\PSICO-Admin-Software")
             CWD = CWD[0:-cut]
         return CWD
-
-
-#    def calculateKeysPressed(Citizen):
-#       parse keypresses
-#       sort countings
-#       return dictionary with keys times pressed
-
-#   def calculateAllKeysPressed():
-#       iterate calculateKeyPressed on all Citizen
-#       return cumulated dictionary
