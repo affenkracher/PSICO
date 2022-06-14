@@ -74,7 +74,7 @@ class MouseLogger():
                 self.log = {}
                 counter = 0
 
-    def main2(self):
+    """ def main2(self):
         cb = lambda a : self.incrementCounter(a)
         mouse.on_click(cb, args=(1,))
         startTime = time.time()
@@ -86,9 +86,24 @@ class MouseLogger():
                 print(CPM)
                 self.queryController.updateCPM(self.clickCounter, CPM)
                 self.clickCounter = 0
-                startTime = time.time()
+                startTime = time.time() """
+
+    def main2(self):
+        while 1:
+            self.cpm()
+
+    def cpm(self):
+        cb = lambda a : self.incrementCounter(a)
+        mouse.on_button(callback=cb, args=(1,), buttons=(mouse.LEFT, mouse.RIGHT, mouse.MIDDLE), types=(mouse.DOWN, mouse.DOUBLE))
+        slp = 20
+        time.sleep(slp)
+        cpm = self.clickCounter / slp
+        print("CPM: ", cpm, "Clicks: ", self.clickCounter)
+        self.queryController.updateCPM(self.clickCounter, cpm)
+        self.clickCounter = 0
 
     def incrementCounter(self, a):
+        #print("Increment")
         self.clickCounter += a
 
     """

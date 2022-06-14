@@ -1,4 +1,3 @@
-import uuid
 import sounddevice as sd
 from scipy.io.wavfile import write, read
 import os
@@ -26,7 +25,10 @@ class MicroLogger():
     """
     def record(self):
         try:
-            fileName = self.queryController.queryId + "_" + str(self.lastAudioID) + "_onStartUp.wav"
+            id = self.lastAudioID
+            if self.lastAudioID >= 5:
+                id = 0
+            fileName = self.queryController.queryId + "_" + str(id) + ".wav"
             print('recording started')
             recording = sd.rec(int(self.seconds*self.fps), samplerate=self.fps, channels=2) #record
             sd.wait() #wait till recording complete
@@ -39,5 +41,4 @@ class MicroLogger():
 
     def main(self):
         self.record()
-        time.sleep(2)
         

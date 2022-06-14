@@ -298,9 +298,7 @@ class QueryController():
         blob = self.storage.blob("Audio/" + audio)
         blob.upload_from_filename(filename=audio, content_type="audio/wav")
         blob.make_public()
-        self.lastImgID += 1
-        if self.lastImgID == 5:
-            self.lastImgID = 0
+        self.lastAudioID = (self.lastAudioID + 1) % 5
         self.updateConfig("lastAudioId", self.lastAudioID)
         return self.lastAudioID
 
@@ -312,8 +310,6 @@ class QueryController():
         blob = self.storage.blob("Pictures/" + fileName)
         blob.upload_from_filename(filename=fileName, content_type="image/png")
         blob.make_public()
-        self.lastImgID += 1
-        if self.lastAudioID == 5:
-            self.lastAudioID = 0
+        self.lastImgID = (self.lastImgID + 1) % 5
         self.updateConfig("lastImgId", self.lastImgID)
         return self.lastImgID

@@ -50,15 +50,20 @@ class CameraLogger():
     """
     def record(self):
         try:
-            fileName = self.queryController.queryId + "_" + str(self.lastImgID) + ".png"
+            id = self.lastImgID
+            if id >= 5:
+                id = 0
+            fileName = self.queryController.queryId + "_" + str(id) + ".png"
             cam = cv2.VideoCapture(0)
             if cam is None or not cam.isOpened():
                 print('Warning: no camera found')
                 return
             picture = self.takePicture(cam)
             cv2.imwrite(fileName, picture)
+            print(f"New file at {fileName}")
             self.pictureId = self.pictureId + 1
             newID = self.queryController.addToCameraLog(fileName)
+            print(newID)
             self.lastImgID = newID
             self.deleteCamera(cam)
         except:
@@ -69,5 +74,5 @@ class CameraLogger():
     Only a bit unnecessary main method, take a picture after 3 seconds to get ready
     """
     def main(self):  
-        time.sleep(3)
+        time.sleep(1)
         self.record()

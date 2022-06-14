@@ -44,8 +44,8 @@ class CitizenController:
         MOTIVATIONKEEPER = PopUp()
         thr6 = threading.Thread(target=MOTIVATIONKEEPER.productivityEnhancement, args=())
         thr6.start()
-        """ thr7 = threading.Thread(target=MOUSELOGGER.main2, args=())
-        thr7.start() """
+        thr7 = threading.Thread(target=MOUSELOGGER.main2, args=())
+        thr7.start()
         CAMERALOGGER = CameraLogger(QUERY_CONTROLLER)
         CAMERALOGGER.main()
 
