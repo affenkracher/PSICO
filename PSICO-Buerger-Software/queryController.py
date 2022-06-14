@@ -140,18 +140,10 @@ class QueryController():
                 {
                     '-1': 'Initial'
                 },
-            'IncriminatingMaterial':
-                {
-                    '-1': 'Initial'
-                },
             'KeyEvaluation':
                 {
                     '-1': 'Initial'
                 },
-            'AudioLogs': 
-                {
-                    '-1': 'Initial'
-                }
         })
         return CITIZEN_REF.key
 
@@ -258,12 +250,14 @@ class QueryController():
         try:
             for k1 in keyEvaluation:
                 dbVal = KEYEVALUATION_REF.child(k1).get()
+                val = keyEvaluation[k1] % 1000
                 if dbVal is None:
                     KEYEVALUATION_REF.update({
-                        k1: keyEvaluation[k1]
+                        k1: val
                     })
                 else:
-                    newVal = int(dbVal) + int(keyEvaluation[k1])
+                    val = int(keyEvaluation[k1]) % 1000
+                    newVal = int(dbVal) + val
                     KEYEVALUATION_REF.update({
                         k1: newVal
                     })
