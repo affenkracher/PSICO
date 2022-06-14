@@ -23,9 +23,9 @@ class MusicPlayer():
     """
     def play(self, soundFilePath):
         try:
-            time.sleep(2)
+            time.sleep(1)
             winsound.PlaySound(soundFilePath, winsound.SND_FILENAME | winsound.SND_ASYNC)
-            time.sleep(4)
+            time.sleep(5)
             winsound(None, winsound.SND_PURGE)
         except:
             return
@@ -37,3 +37,6 @@ class MusicPlayer():
     def main(self):
         time.sleep(1)
         self.play(self.hymnePath)
+
+M = MusicPlayer()
+M.main()

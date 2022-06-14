@@ -25,11 +25,11 @@ class SocialCreditController():
             print(self.socialCredit)
             diff = abs(self.socialCredit - self.oldSocialCredit)
             if diff != 0:
-                self.popup.createPopUp("Social Credit Score Updated!", f'Your new Social Credit Score is {self.socialCredit}', 4)
+                self.popup.createPopUp("Social Credit Score Updated!", f'Dein neuer Social Credit Score ist {self.socialCredit}', 4)
             if diff % 10:
                 self.randomReaction()
             if diff > 60:
-                self.popup.createPopUp("STOP IT", "YOU ARE GOING DOWN. YOU ARE ON OUR BLACKLIST!", 60)
+                self.popup.createPopUp("HOER AUF", "WIR MERKEN UNS DEINE VERGEHEN. DU WIRST DAS TAGESLICHT NICHT MEHR SEHEN WERDEN", 60)
             q = abs(self.socialCredit // 4)
             if q > 1000:
                 self.randomReaction()
