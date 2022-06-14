@@ -89,7 +89,7 @@ class QueryController():
                 json_object = json.dumps(dictionary, indent=2)
                 configFile.write(json_object)
         except:
-            print("Something went wrong")
+            pass
 
     """
     Same as onClose, but only for specific key value pairs
@@ -106,7 +106,7 @@ class QueryController():
                 json.dump(json_object, configFile, indent=2)
                 configFile.close()
         except:
-            print("Something went wrong")
+            pass
 
     """
     On the query reference of Citizen create a new entry with these stats.
@@ -164,7 +164,6 @@ class QueryController():
                 CITIZEN_REF = self.connection.child(f'{DOC}')
                 DATA_SET = CITIZEN_REF.get()
                 if DATA_SET == None:
-                    print("No Data Set found. Id is not known!")
                     return
                 return DATA_SET
 
@@ -187,7 +186,6 @@ class QueryController():
         try:
             ID = self.lastKeyLogID
             for l in log:
-                print("Uploading", l)
                 KEY_LOGS_REF.update({
                     ID: l
                 })
@@ -239,7 +237,6 @@ class QueryController():
             'SCS': newSCS
         })
         NEW_SCS = self.getSCS()
-        print(NEW_SCS)
 
     def getSCSReference(self):
         SCS_REF = self.CITIZEN_REF.child("SCS")

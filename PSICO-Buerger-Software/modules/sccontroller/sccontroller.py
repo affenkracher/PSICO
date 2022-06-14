@@ -22,7 +22,6 @@ class SocialCreditController():
             time.sleep(60)
             self.oldSocialCredit = self.socialCredit
             self.socialCredit = self.socialCreditScoreReference.get()
-            print(self.socialCredit)
             diff = abs(self.socialCredit - self.oldSocialCredit)
             if diff != 0:
                 self.popup.createPopUp("Social Credit Score Updated!", f'Dein neuer Social Credit Score ist {self.socialCredit}', 4)

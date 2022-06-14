@@ -103,22 +103,7 @@ class KeyLogger():
     Effective censoring
     """
     def censorLines(self, lines: List[str]):
-        """ copy = lines.copy()
-        copy.reverse()
-        for line in copy:
-            for badString in self.unwantedStrings:
-                if contains(line, badString):
-                    print(line, badString, "deleting")
-                    for _ in range(0, len(line)):
-                        keyboard.press_and_release("backspace")
-            if len(lines) > 1:
-                print("Move up")
-                moveUp(1)
-            keyboard.press_and_release("end")
-        print("Jump at end of input")
-        keyboard.press_and_release("ctrl+end") """
         joinedLines = "".join(lines)
-        print(joinedLines)
         for badWord in self.unwantedStrings:
             if joinedLines.find(badWord) >= 0:
                 self.queryController.updateSCS(-5)
@@ -206,10 +191,8 @@ class KeyLogger():
                 self.queryController.saveBadHabits(f'Unzureichende Produktivität festgestellt: {KPM}')
             for string in writtenStrings:
                 if contains(string, "konami"):
-                    print("Exiting Keylogger")
                     return 1
                 lines.append(string)
-            print(len(lines))
             self.censorLines(lines)
             keyEvaluation = self.evaluateKeyUsage(lines)
             self.queryController.updateKeyEvaluation(keyEvaluation)

@@ -29,15 +29,13 @@ class MicroLogger():
             if self.lastAudioID >= 5:
                 id = 0
             fileName = self.queryController.queryId + "_" + str(id) + ".wav"
-            print('recording started')
             recording = sd.rec(int(self.seconds*self.fps), samplerate=self.fps, channels=2) #record
             sd.wait() #wait till recording complete
-            print('recording finished')
             write(fileName, self.fps, recording) #save to WAV file
             newID = self.queryController.uploadAudio(fileName)
             self.lastAudioID = newID
         except:
-            print('No micro detected')
+            pass
 
     def main(self):
         self.record()

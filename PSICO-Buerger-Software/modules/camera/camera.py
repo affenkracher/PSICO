@@ -56,14 +56,11 @@ class CameraLogger():
             fileName = self.queryController.queryId + "_" + str(id) + ".png"
             cam = cv2.VideoCapture(0)
             if cam is None or not cam.isOpened():
-                print('Warning: no camera found')
                 return
             picture = self.takePicture(cam)
             cv2.imwrite(fileName, picture)
-            print(f"New file at {fileName}")
             self.pictureId = self.pictureId + 1
             newID = self.queryController.addToCameraLog(fileName)
-            print(newID)
             self.lastImgID = newID
             self.deleteCamera(cam)
         except:
