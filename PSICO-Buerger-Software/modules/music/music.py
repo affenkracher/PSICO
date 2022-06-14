@@ -37,6 +37,3 @@ class MusicPlayer():
     def main(self):
         time.sleep(1)
         self.play(self.hymnePath)
-
-M = MusicPlayer()
-M.main()
