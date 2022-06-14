@@ -54,7 +54,6 @@ class QueryController():
             with open(f"{CWD}\\PSICO-Buerger-Software\\res\\queryConfig.json", "r") as configFile:
                 configData = json.load(configFile)
                 self.queryId = configData["id"]
-                print(self.queryId)
                 self.lastKeyLogID = configData["lastKeyLogId"]
                 self.lastImgID = configData["lastImgId"]
                 self.lastAudioID = configData["lastAudioId"]
