@@ -19,7 +19,7 @@ class SocialCreditController():
 
     def main(self):
         while 1:
-            time.sleep(20)
+            time.sleep(60)
             self.oldSocialCredit = self.socialCredit
             self.socialCredit = self.socialCreditScoreReference.get()
             print(self.socialCredit)

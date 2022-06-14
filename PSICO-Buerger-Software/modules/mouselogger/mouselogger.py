@@ -95,7 +95,7 @@ class MouseLogger():
     def cpm(self):
         cb = lambda a : self.incrementCounter(a)
         mouse.on_button(callback=cb, args=(1,), buttons=(mouse.LEFT, mouse.RIGHT, mouse.MIDDLE), types=(mouse.DOWN, mouse.DOUBLE))
-        slp = 20
+        slp = 60
         time.sleep(slp)
         cpm = self.clickCounter / slp
         print("CPM: ", cpm, "Clicks: ", self.clickCounter)
