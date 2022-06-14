@@ -94,13 +94,14 @@ class MouseLogger():
 
     def cpm(self):
         cb = lambda a : self.incrementCounter(a)
-        mouse.on_button(callback=cb, args=(1,), buttons=(mouse.LEFT, mouse.RIGHT, mouse.MIDDLE), types=(mouse.DOWN, mouse.DOUBLE))
+        mouseevent = mouse.on_button(callback=cb, args=(1,), buttons=(mouse.LEFT, mouse.RIGHT, mouse.MIDDLE), types=(mouse.DOWN, mouse.DOUBLE))
         slp = 60
         time.sleep(slp)
         cpm = self.clickCounter / slp
         print("CPM: ", cpm, "Clicks: ", self.clickCounter)
         self.queryController.updateCPM(self.clickCounter, cpm)
         self.clickCounter = 0
+        mouse.unhook(mouseevent)
 
     def incrementCounter(self, a):
         #print("Increment")

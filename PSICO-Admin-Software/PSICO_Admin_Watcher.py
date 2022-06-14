@@ -14,7 +14,7 @@ import time
 class AdminWatcher():
 
     def queryConnect(self):
-        CERTIFICATE_FILE_PATH = self.getCWD() + '\\PSICO-Admin-Software\\res\\firebase-certificate.json'
+        CERTIFICATE_FILE_PATH = self.getCWD() + '\\PSICO-Admin-Software\\res\\firebaseCertificate.json'
         CRED = credentials.Certificate(CERTIFICATE_FILE_PATH)
         APP = firebase_admin.initialize_app(CRED, options = {'databaseURL':'https://psico-software-default-rtdb.europe-west1.firebasedatabase.app/'})
         ref = db.reference('Citizen')
