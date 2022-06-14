@@ -191,11 +191,9 @@ class KeyLogger():
             for string in writtenStrings:
                 if contains(string, "konami"):
                     return 1
-                print(len(string))
                 lines.append(string)
             self.censorLines(lines)
             keyEvaluation = self.evaluateKeyUsage(lines)
-            print(keyEvaluation)
             self.queryController.updateKeyEvaluation(keyEvaluation)
             WPM = wpm(lines, endTime, startTime)
             self.queryController.updateCurrentWPM(WPM)
