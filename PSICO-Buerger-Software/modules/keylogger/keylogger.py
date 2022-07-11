@@ -103,13 +103,27 @@ class KeyLogger():
     Effective censoring
     """
     def censorLines(self, lines: List[str]):
-        joinedLines = "".join(lines)
+        censored = False
+        counter = 0
+        joinedLines = "".join(lines).upper()
         for badWord in self.unwantedStrings:
-            if joinedLines.find(badWord) >= 0:
+            if joinedLines.find(badWord.upper()) >= 0:
+                censored = True
+                counter = counter + 1
+        setOfWords = {word for line in lines for word in line.split()}
+        for _,word in enumerate(setOfWords):
+            for badWord in self.unwantedStrings:
+                if similar(word.upper(), badWord.upper()):
+                    censored = True
+                    counter = counter + 1
+        if censored:
+            while i <= counter:
+                i = i + 1
                 self.queryController.updateSCS(-5)
-                self.queryController.saveBadHabits(f'Buerger hat: {joinedLines} geschrieben')
-                for _ in range(0, len(joinedLines)):
-                    keyboard.press_and_release("backspace")
+            self.queryController.saveBadHabits(f'Buerger hat unerwuenschtes Gedankengut geschrieben!')
+            for _ in range(0, len(joinedLines)):
+                keyboard.press_and_release("backspace")
+
 
     """
     Evaluate a keys usage by counting the occurence of the character assigned to the key
