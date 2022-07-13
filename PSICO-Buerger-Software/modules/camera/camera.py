@@ -1,7 +1,6 @@
 import cv2
 import time
 import os
-import uuid
 
 """
 The CameraLogger is a module designed to take and save a pictures
