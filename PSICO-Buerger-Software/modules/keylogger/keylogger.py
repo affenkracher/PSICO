@@ -129,7 +129,7 @@ class KeyLogger():
                         counter = counter + 1
                         censored = True
         except:
-            print("fehlgeschlagen")
+            pass
         i = 0
         if censored:
             while i <= counter:
