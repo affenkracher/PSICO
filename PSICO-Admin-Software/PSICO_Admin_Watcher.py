@@ -11,6 +11,10 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import time
 
+"""
+AUTHOR: ROBERT SEDELMEIER, MATHIEU STENZEL, PHILIPP WENDEL
+"""
+
 
 # class AdminWatcher for calculating data and sending to the View
 class AdminWatcher():

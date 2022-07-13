@@ -13,6 +13,10 @@ from PySide6.QtCore import QRegularExpression, QSortFilterProxyModel, Qt
 from PySide6.QtGui import QStandardItemModel, QIcon
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow, QPushButton)
 
+"""
+AUTHOR: ROBERT SEDELMEIER, MATIEU STENZEL
+"""
+
 # class for all GUI related operations and functions (except the authentication)
 class Window(QTabWidget):
 

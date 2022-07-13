@@ -4,7 +4,7 @@ import math
 import time
 
 """
-AUTHOR(S): PHILIPP WENDEL, MATTHIEU STENZEL
+AUTHOR(S): PHILIPP WENDEL, MATHIEU STENZEL
 """
 
 """
