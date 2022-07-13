@@ -1,8 +1,11 @@
 import mouse
-from numpy import diff
 from screeninfo import get_monitors
 import math
 import time
+
+"""
+AUTHOR(S): PHILIPP WENDEL, MATTHIEU STENZEL
+"""
 
 """
 Translate the values of any mouse position to that of a hd monitor (1920 x 1080)

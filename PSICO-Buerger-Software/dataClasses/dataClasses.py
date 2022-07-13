@@ -2,6 +2,10 @@ from dataclasses import dataclass
 from typing import List
 
 """
+AUTHOR: PHILIPP WENDEL
+"""
+
+"""
 DataClasses are a quick and easy way to implement data-holding objects in Python,
 with all the getter, setter, equal and __str__ methods auto-generated.
 """

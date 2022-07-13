@@ -2,6 +2,10 @@ import psutil
 import time
 #import pandas as pd
 
+"""
+AUTHOR: MAHMOUD ALMASRI, PHILIPP WENDEL
+"""
+
 class Task():
     def __init__(self, queryConnector, blackListTasks):
         self.queryConnector = queryConnector

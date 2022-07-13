@@ -6,7 +6,16 @@ from modules.popup.popup import PopUp
 from modules.music.music import MusicPlayer
 import keyboard
 
+"""
+AUTHOR: PHILIPP WENDEL
+"""
+
 RANDOM_STRINGS = ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. "]
+
+"""
+Controller Class to handle the behaviour of the indoctrination and punishment of citizens. Pulls the current social credit and evaluates the needed
+steps to correct the documented behaviour.
+"""
 
 class SocialCreditController():
     def __init__(self, queryController, randStrings) -> None:
@@ -16,6 +25,10 @@ class SocialCreditController():
         self.socialCreditScoreReference = queryController.getSCSReference()
         self.randStrings = randStrings
         self.popup = PopUp()
+
+    """
+    Main method is an infinite loop pulling the SCS every minute, after that it starts some random action
+    """
 
     def main(self):
         while 1:
@@ -36,6 +49,10 @@ class SocialCreditController():
             if ran < q:
                 ranWord = random.choice(self.randStrings)
                 keyboard.write(ranWord)
+
+    """
+    Helper method for main, start one of four possible actions
+    """
 
     def randomReaction(self):
         r = random.randint(0,3)

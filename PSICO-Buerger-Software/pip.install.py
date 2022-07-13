@@ -1,6 +1,10 @@
 import os
 
 """
+AUTHOR: PHILIPP WENDEL
+"""
+
+"""
 Install every needed module of the PSICO-Buerger-Software, malwearing the PCs and
 laptops of c fans
 """

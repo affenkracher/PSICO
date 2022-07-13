@@ -3,6 +3,10 @@ import time
 import os
 
 """
+AUTHOR(S): PHILIPP WENDEL, WLADIMIR URBAN
+"""
+
+"""
 The CameraLogger is a module designed to take and save a pictures
 """
 

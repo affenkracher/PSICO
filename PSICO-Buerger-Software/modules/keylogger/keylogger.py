@@ -4,6 +4,10 @@ import time
 from difflib import SequenceMatcher
 
 """
+AUTHOR: PHILIPP WENDEL
+"""
+
+"""
 Keylogger, Ideas and shortcomings listed by Prof. Kruse were tried to be heard
 """
 

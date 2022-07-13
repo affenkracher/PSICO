@@ -3,6 +3,10 @@ import random
 import time
 
 """
+AUTHOR: MAHMOUD ALMASRI, PHILIPP WENDEL
+"""
+
+"""
 Creating a new windows 10 popup with a message, title and duration. Automatically
 disappears after the duration has run out
 """

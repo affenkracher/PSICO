@@ -6,6 +6,10 @@ from firebase_admin.db import Reference
 import os
 import json
 
+"""
+AUTHOR: PHILIPP WENDEL
+"""
+
 def getCWD():
     CWD = os.getcwd()
     if CWD.find("\\PSICO-Buerger-Software") >= 0:

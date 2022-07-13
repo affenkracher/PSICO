@@ -11,6 +11,10 @@ from queryController import QueryController
 import threading
 
 """
+AUTHOR: PHILIPP WENDEL
+"""
+
+"""
 Central Controller of the PSICO-Buerger-Software, manages every modules and the queryController.
 Starts any module in a seperate thread to ensure smooth sailing
 """

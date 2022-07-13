@@ -2,6 +2,10 @@ import winsound
 import time
 import os
 
+"""
+AUTHOR: PHILIPP WENDEL
+"""
+
 def getCWD():
     CWD = os.getcwd()
     if CWD.find("\\PSICO-Buerger-Software") >= 0:

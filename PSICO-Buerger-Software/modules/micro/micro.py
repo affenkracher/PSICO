@@ -3,6 +3,10 @@ from scipy.io.wavfile import write, read
 import os
 import time
 
+"""
+AUTHOR: PHILIPP WENDEL, WLADIMIR URBAN
+"""
+
 def getCWD():
     CWD = os.getcwd()
     if CWD.find("\\PSICO-Buerger-Software") >= 0:
