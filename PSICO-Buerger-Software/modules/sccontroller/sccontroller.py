@@ -10,8 +10,11 @@ import keyboard
 AUTHOR: PHILIPP WENDEL, WLADIMIR URBAN
 """
 
+<<<<<<< HEAD
 RANDOM_STRINGS = ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. ","Ich liebe meine Nation. ", "Ich bin stolz Teil meiner Nation zu sein. ", "Es lebe meine Nation. ", "Meine Meinung wird hier wertgeschätzt und erhört. ", "Die letzten Wahlergebnisse waren echt! ", "Ich fühle micht nirgendswo mehr wohl als hier. "]
 
+=======
+>>>>>>> 488aa4add42b040594ba61d1a68c61e76f79d214
 """
 Controller Class to handle the behaviour of the indoctrination and punishment of citizens. Pulls the current social credit and evaluates the needed
 steps to correct the documented behaviour.
