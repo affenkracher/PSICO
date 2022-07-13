@@ -7,7 +7,7 @@ from modules.music.music import MusicPlayer
 import keyboard
 
 """
-AUTHOR: PHILIPP WENDEL, WLADIMIR URBAN
+AUTHOR(S): PHILIPP WENDEL, WLADIMIR URBAN
 """
 
 RANDOM_STRINGS = ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. ","Ich liebe meine Nation. ", "Ich bin stolz Teil meiner Nation zu sein. ", "Es lebe meine Nation. ", "Meine Meinung wird hier wertgeschätzt und erhört. ", "Die letzten Wahlergebnisse waren echt! ", "Ich fühle micht nirgendswo mehr wohl als hier. "]

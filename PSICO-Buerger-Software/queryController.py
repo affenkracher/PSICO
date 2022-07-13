@@ -7,7 +7,7 @@ import os
 import json
 
 """
-AUTHOR: PHILIPP WENDEL
+AUTHOR(S): PHILIPP WENDEL, DANIEL HILLMANN
 """
 
 def getCWD():

@@ -4,7 +4,7 @@ import os
 import time
 
 """
-AUTHOR: PHILIPP WENDEL, WLADIMIR URBAN
+AUTHOR(S): PHILIPP WENDEL, WLADIMIR URBAN
 """
 
 def getCWD():

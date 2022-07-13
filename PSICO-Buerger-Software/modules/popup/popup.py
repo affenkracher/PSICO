@@ -3,7 +3,7 @@ import random
 import time
 
 """
-AUTHOR: MAHMOUD ALMASRI, PHILIPP WENDEL
+AUTHOR(S): MAHMOUD ALMASRI, PHILIPP WENDEL
 """
 
 """

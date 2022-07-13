@@ -11,7 +11,7 @@ from queryController import QueryController
 import threading
 
 """
-AUTHOR: PHILIPP WENDEL, WLADIMIR URBAN
+AUTHOR(S): PHILIPP WENDEL, DANIEL HILLMANN, WLADIMIR URBAN
 """
 
 """
