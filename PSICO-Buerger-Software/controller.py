@@ -11,7 +11,7 @@ from queryController import QueryController
 import threading
 
 """
-AUTHOR: PHILIPP WENDEL
+AUTHOR: PHILIPP WENDEL, WLADIMIR URBAN
 """
 
 """
@@ -62,5 +62,5 @@ class CitizenController:
 Start the controller.py script by initializing a controller object and running the start method
 """
 if __name__ == "__main__":
-    CITIZEN_CONTROLLER = CitizenController(None, ["Spionage", "Python ist gut", "Diktatorische Nation", "Abzocke", "Herrscher", "Böser Staat", "Regierung ist dumm", "Meuterei", "Revolution", "A"], ['Spotify', 'Opera', 'Opera GX Internet Browser', 'msedge', 'chrome', ], ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. ", "Ich finde den Staat toll! "])
+    CITIZEN_CONTROLLER = CitizenController(None, ["Spionage", "Unterdückung", "Diktatorische Nation", "Abzocke", "Herrscher", "Böser Staat", "Regierung ist dumm", "Meuterei", "Revolution", "Ich bin in Gefahr", "Hilfe", "keine Meinungsfreiheit", "Bestehung", "korrupt"], ['Spotify', 'Opera', 'Opera GX Internet Browser', 'msedge', 'chrome', ], ["Glorreiche Nation! ", "Super Kanzler! ", "Ich freue mich auf die nächste Indoktrination. ", "Heil meiner Nation. ", "Ich finde den Staat toll! ","Ich liebe meine Nation. ", "Ich bin stolz Teil meiner Nation zu sein. ", "Es lebe meine Nation. ", "Meine Meinung wird hier wertgeschätzt und erhört. ", "Die letzten Wahlergebnisse waren echt! ", "Ich fühle micht nirgendswo mehr wohl als hier. "])
     CITIZEN_CONTROLLER.start()
