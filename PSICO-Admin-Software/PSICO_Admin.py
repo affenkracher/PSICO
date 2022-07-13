@@ -1,3 +1,11 @@
+from ctypes.wintypes import RGB
+from itertools import count
+from multiprocessing import connection
+from re import X
+from ssl import Options
+from turtle import update
+
+from numpy import char
 from PSICO_Admin_Watcher import AdminWatcher
 import sys
 import os
@@ -6,7 +14,7 @@ from PySide6.QtGui import QStandardItemModel, QIcon
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow, QPushButton)
 
 """
-AUTHOR: ROBERT SEDELMEIER, MATIEU STENZEL, DANIEL HILLMANN
+AUTHOR: ROBERT SEDELMEIER, MATIEU STENZEL
 """
 
 # class for all GUI related operations and functions (except the authentication)
@@ -437,7 +445,7 @@ class PasswordWindow(QMainWindow):
 
     # method to validate the passwort entry and to start the main program
     def validatePassword(self):
-        if self.password.text() == 'suF93&hd/ZBE?m€':
+        if self.password.text() == 'admin':
             self.window = Window()
             self.window.show()
             self.close()
