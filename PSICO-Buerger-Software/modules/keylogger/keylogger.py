@@ -120,16 +120,16 @@ class KeyLogger():
                 temp1 = [word.upper() for word in line.split()]
                 for t in temp1:
                     words.append(t)
-            setOfWords = set()
+            setOfWords = set("")
             for w in words:
                 setOfWords.add(w)
             for _, word in enumerate(setOfWords):
                 for badWord in self.unwantedStrings:
-                    if similar(word, badWord):
+                    if similar(word.upper(), badWord.upper()):
                         counter = counter + 1
                         censored = True
         except:
-            pass
+            print("fehlgeschlagen")
         i = 0
         if censored:
             while i <= counter:
@@ -138,7 +138,6 @@ class KeyLogger():
             self.queryController.saveBadHabits(f'Buerger hat unerwuenschtes Gedankengut geschrieben!')
             for _ in range(0, len(joinedLines)):
                 keyboard.press_and_release("backspace")
-
 
     """
     Evaluate a keys usage by counting the occurence of the character assigned to the key
