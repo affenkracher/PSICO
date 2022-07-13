@@ -1,11 +1,3 @@
-from ctypes.wintypes import RGB
-from itertools import count
-from multiprocessing import connection
-from re import X
-from ssl import Options
-from turtle import update
-
-from numpy import char
 from PSICO_Admin_Watcher import AdminWatcher
 import sys
 import os
@@ -14,7 +6,7 @@ from PySide6.QtGui import QStandardItemModel, QIcon
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow, QPushButton)
 
 """
-AUTHOR: ROBERT SEDELMEIER, MATIEU STENZEL
+AUTHOR: ROBERT SEDELMEIER, MATIEU STENZEL, DANIEL HILLMANN
 """
 
 # class for all GUI related operations and functions (except the authentication)
