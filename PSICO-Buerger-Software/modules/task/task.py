@@ -3,7 +3,7 @@ import time
 #import pandas as pd
 
 """
-AUTHOR: MAHMOUD ALMASRI, PHILIPP WENDEL
+AUTHOR: MAHMOUD ALMASRI, DANIEL HILLMANN, PHILIPP WENDEL
 """
 
 class Task():

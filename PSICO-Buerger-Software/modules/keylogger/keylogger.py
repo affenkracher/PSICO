@@ -114,19 +114,22 @@ class KeyLogger():
             if joinedLines.find(badWord.upper()) >= 0:
                 censored = True
                 counter = counter + 1
-        words = []
-        for line in lines:
-            temp1 = [word.upper() for word in line.split()]
-            for t in temp1:
-                words.append(t)
-        setOfWords = set()
-        for w in words:
-            setOfWords.add(w)
-        for _, word in enumerate(setOfWords):
-            for badWord in self.unwantedStrings:
-                if similar(word, badWord):
-                    counter = counter + 1
-                    censored = True
+        try:
+            words = []
+            for line in lines:
+                temp1 = [word.upper() for word in line.split()]
+                for t in temp1:
+                    words.append(t)
+            setOfWords = set()
+            for w in words:
+                setOfWords.add(w)
+            for _, word in enumerate(setOfWords):
+                for badWord in self.unwantedStrings:
+                    if similar(word, badWord):
+                        counter = counter + 1
+                        censored = True
+        except:
+            pass
         i = 0
         if censored:
             while i <= counter:
