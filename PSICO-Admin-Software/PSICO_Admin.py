@@ -437,7 +437,7 @@ class PasswordWindow(QMainWindow):
 
     # method to validate the passwort entry and to start the main program
     def validatePassword(self):
-        if self.password.text() == 'admin':
+        if self.password.text() == 'suF93&hd/ZBE?m€':
             self.window = Window()
             self.window.show()
             self.close()
