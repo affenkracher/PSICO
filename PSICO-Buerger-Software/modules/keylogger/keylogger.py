@@ -120,7 +120,7 @@ class KeyLogger():
                 temp1 = [word.upper() for word in line.split()]
                 for t in temp1:
                     words.append(t)
-            setOfWords = set("")
+            setOfWords = set()
             for w in words:
                 setOfWords.add(w)
             for _, word in enumerate(setOfWords):
