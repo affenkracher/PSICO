@@ -14,7 +14,7 @@ from PySide6.QtGui import QStandardItemModel, QIcon
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout, QLabel, QLineEdit, QTreeView, QWidget, QTabWidget, QAbstractItemView, QMainWindow, QPushButton)
 
 """
-AUTHOR(S): ROBERT SEDELMEIER, MATIEU STENZEL
+AUTHOR(S): ROBERT SEDELMEIER, MATIEU STENZEL, DANIEL HILLMANN
 """
 
 # class for all GUI related operations and functions (except the authentication)
